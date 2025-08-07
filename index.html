@@ -12,6 +12,19 @@
   <div class="bar-container" id="bar"></div>
   <div class="label" id="label"></div>
 
+  <div id="form-container">
+    <form id="character-form">
+      <input type="text" placeholder="Character Name" id="name" required />
+      <input type="number" placeholder="Speed" id="speed" required min="1" />
+      <input type="number" placeholder="# Ultimates" id="ultimates" min="0" value="1" />
+      <label><input type="checkbox" id="eagle" /> Eagle Set</label>
+      <label><input type="checkbox" id="ddd" /> DDD Equipped</label>
+      <button type="submit">Add Character</button>
+    </form>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
   <script src="sim.js"></script>
 </body>
 </html>
