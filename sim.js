@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const legend = document.getElementById("legend");
 
   const characters = [];
+  const all_actions = [];
 
   function generateColor(index) {
     const colors = ['teal', 'crimson', 'purple', 'orange', 'green', 'blue', 'magenta'];
@@ -22,23 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
     bar.innerHTML = "";
     legend.innerHTML = "";
 
-    // Count total DDD ultimates (used for global bonus)
-    const totalDddCasts = characters.reduce((sum, c) => sum + (c.ddd ? c.ultimates : 0), 0);
-
     characters.forEach((char, index) => {
-      const { name, speed, eagle, ultimates, ddd, color } = char;
+      const { name, speed, eagle, ddd, color } = char;
 
       // Base gain
       let gain = speed * totalAV;
-
-      // Eagle applies only to self
-      if (eagle) gain += ultimates * eagleBoost;
-
-      // DDD applies globally
-      gain += totalDddCasts * dddBoost;
-
-      const avPerAction = actionCost / speed;
-      const actions = Math.floor(gain / actionCost);
+      let avPerAction = 10000 / speed
+      let actions = gain / 10000
 
       for (let i = 0; i < actions; i++) {
         const avUsed = (i + 1) * avPerAction;
@@ -46,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const leftPx = leftPercent * barWidth;
 
         if (leftPx > barWidth) continue;
+        all_actions.push({avUsed, name})
 
         const marker = document.createElement("div");
         marker.className = "action-marker";
@@ -56,9 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const legendItem = document.createElement("span");
-      legendItem.innerHTML = `<strong style="color:${color}">${name}</strong> (${speed} SPD, ${ultimates} Ults${eagle ? ", Eagle" : ""}${ddd ? ", DDD" : ""})`;
+      legendItem.innerHTML = `<strong style="color:${color}">${name}</strong> (${speed} SPD ${eagle ? ", Eagle" : ""}${ddd ? ", DDD" : ""})`;
       legend.appendChild(legendItem);
     });
+
+    console.log(all_actions)
   }
 
   form.addEventListener("submit", (e) => {
@@ -66,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const name = document.getElementById("name").value.trim();
     const speed = parseFloat(document.getElementById("speed").value);
-    const ultimates = parseInt(document.getElementById("ultimates").value, 10) || 0;
     const eagle = document.getElementById("eagle").checked;
     const ddd = document.getElementById("ddd").checked;
 
@@ -75,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     characters.push({
       name,
       speed,
-      ultimates,
       eagle,
       ddd,
       color: generateColor(characters.length)
