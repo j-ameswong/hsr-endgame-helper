@@ -1,29 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Constants
-    const totalActionValue = 150;
-    const barWidth = 800; // match CSS max-width
+  const totalActionValue = 150;
+  const barWidth = 800;
 
-    // Character info
-    const speed = 150;
-    const actionCost = 10000;
+  const characters = [
+    { name: "Char 1", speed: 134, av: 10000, color: "teal" },
+    { name: "Char 2", speed: 132, av: 10000, color: "purple" },
+    { name: "Char 3", speed: 108, av: 10000, color: "crimson" },
+    { name: "Char 4", speed: 120, av: 10000, color: "orange" }
+  ];
 
-    const bar = document.getElementById("bar");
-    const label = document.getElementById("label");
+  const bar = document.getElementById("bar");
+  const label = document.getElementById("label");
 
-    // Calculate how many actions fit in 150 AV
-    const avPerAction = actionCost / speed;
+  characters.forEach((char, index) => {
+    const { speed, av, color, name } = char;
+    const avPerAction = av / speed;
     const actionsInCycle = Math.floor(totalActionValue / avPerAction);
 
     for (let i = 0; i < actionsInCycle; i++) {
-        const avUsed = (i + 1) * avPerAction;
-        const leftPercent = avUsed / totalActionValue;
-        const leftPx = leftPercent * barWidth;
+      const avUsed = (i + 1) * avPerAction;
+      const leftPercent = avUsed / totalActionValue;
+      const leftPx = leftPercent * barWidth;
 
-        const marker = document.createElement("div");
-        marker.className = "action-marker";
-        marker.style.left = `${leftPx}px`;
-        bar.appendChild(marker);
+      const marker = document.createElement("div");
+      marker.className = "action-marker";
+      marker.style.left = `${leftPx}px`;
+      marker.style.backgroundColor = color;
+      marker.title = `${name} - Turn ${i + 1}`;
+      bar.appendChild(marker);
     }
+  });
 
-    label.textContent = `Speed: ${speed} → Action every ${avPerAction.toFixed(2)} AV. Actions in first cycle: ${actionsInCycle}`;
-})
+  label.innerHTML = characters.map(c => 
+    `<span style="color:${c.color}">${c.name} (${c.speed} SPD)</span>`
+  ).join(" • ");
+});
