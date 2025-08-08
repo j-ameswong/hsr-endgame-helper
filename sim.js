@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("character-form");
   const bar = document.getElementById("bar");
   const legend = document.getElementById("legend");
+  const action_tab = document.getElementById("actions");
 
   const characters = [];
   const all_actions = [];
@@ -28,11 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Base gain
       let gain = speed * totalAV;
-      let avPerAction = 10000 / speed
-      let actions = gain / 10000
+      let avPerAction = 10000 / speed;
+      let actions = gain / 10000;
+      let avUsed = 0;
 
       for (let i = 0; i < actions; i++) {
-        const avUsed = (i + 1) * avPerAction;
+        avUsed = (i + 1) * avPerAction;
         const leftPercent = avUsed / totalAV;
         const leftPx = leftPercent * barWidth;
 
@@ -50,6 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const legendItem = document.createElement("span");
       legendItem.innerHTML = `<strong style="color:${color}">${name}</strong> (${speed} SPD ${eagle ? ", Eagle" : ""}${ddd ? ", DDD" : ""})`;
       legend.appendChild(legendItem);
+
+      let actionItem = document.createElement("span");
+      actionItem.innerHTML = `<strong style="color:${color}">${name}</strong> AV: ${avUsed}`;
+      action_tab.appendChild(actionItem);
     });
 
     console.log(all_actions)
@@ -76,4 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
     form.reset();
     render();
   });
+
+  function updateActionBar() {
+    all_actions.sort(function(a,b){return a[0] < b[0]});
+    all_actions.forEach((char) => {
+      const action_entry = document.createElement("span");
+
+    })
+  };
 });
