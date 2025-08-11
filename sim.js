@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const bar = document.getElementById("bar");
   const legend = document.getElementById("legend");
   const action_tab = document.getElementById("actions");
-
+ 
   const characters = [];
   const all_actions = [];
 
