@@ -11,7 +11,7 @@ function Dropdown({startNum, stopNum}) {
     <option value="">Choose...</option>
     {options.map((number) => (
       <option key={number} value={number}>
-        {number}
+        {"S" + number}
       </option>
     ))}
   </select>
@@ -22,14 +22,30 @@ function CreateCharacter() {
   return(
     <div className="App-character">
       <form>
-        <label for="characterName">Character</label>
-        <input type="text" id="characterName" name="characterName"></input>
+        <div class="row">
+          <label for="characterName">Character</label>
+          <input type="text" id="characterName" name="characterName"></input>
+        </div>
 
-        <label for="dddLevel">DDD Level</label>
-        <Dropdown startNum={1} stopNum={5}/>
+        <div class="row">
+          <label for="characterSpeed">Spd</label>
+          <input type="number" step="0.1" id="characterSpeed" name="characterSpeed"></input>
+        </div>
 
-        <label for="dddProcs">Number of Ultimates</label>
-        <input type="checkbox" id="dddProcs" name="dddProcs"></input>
+        <div class="row">
+          <label for="dddLevel">DDD</label>
+          <div class="wrapper">
+            <Dropdown id="dddLevel" startNum={1} stopNum={5}/>
+            <input type="checkbox" id="dddEquipped" name="dddEquipped"></input>
+          </div>
+        </div>
+
+        <div class="row">
+          <label for="eagleEquipped">Eagle Set</label>
+          <input type="checkbox" id="eagleEquipped" name="eagleEquipped"></input>
+        </div>
+
+        <div id="submitWrapper" class="wrapper"><button type="submit">Add</button></div>
       </form>
     </div>
   );
@@ -42,15 +58,13 @@ function App() {
         <p className="App-link">HSR Endgame Helper </p>
       </header>
 
-      <div className="App-graph">
-        Placeholder Graph
+      <div class="App-content">
+        <CreateCharacter />
+
+        <div className="App-graph">
+          Placeholder Graph
+        </div>
       </div>
-
-      <form>
-        <input></input>
-      </form>
-
-      <CreateCharacter />
     </div>
   );
 }
