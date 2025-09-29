@@ -51,6 +51,17 @@ function CreateCharacter() {
   );
 }
 
+function CharacterCreated() {
+  <div class="createdCharacter">
+    <image></image>
+    <p>Placeholder</p>
+    { 
+    // DDD image greyed out
+    // Vonwacq image greyed out
+    }
+  </div>
+}
+
 function App() {
   return (
     <div className="App">
@@ -59,12 +70,17 @@ function App() {
       </header>
 
       <div class="App-content">
-        <CreateCharacter />
+        <div class="App-left">
+          <CreateCharacter />
+          <CreateCharacter />
+        </div>
+        
 
         <div className="App-graph">
           Placeholder Graph
         </div>
       </div>
+
     </div>
   );
 }
