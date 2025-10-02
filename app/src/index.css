@@ -1,3 +1,8 @@
+html {
+  margin: auto;
+  min-height: 100vh;
+}
+
 img {
   padding: 1em;
 }

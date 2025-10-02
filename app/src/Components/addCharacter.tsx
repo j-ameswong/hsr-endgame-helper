@@ -1,21 +1,21 @@
 import { useState } from "react";
 
 interface AddCharacterProps {
-    stringParam: string;
+  stringParam: string;
 }
 
-function AddCharacter({stringParam}: AddCharacterProps) {
-    const [testData, changeTestData] = useState("AAA")
+function AddCharacter({ stringParam }: AddCharacterProps) {
+  const [testData, changeTestData] = useState("AAA");
 
-    function buttonPressed() {
-        testData === "AAA" ? changeTestData(stringParam) : changeTestData("AAA")
-    }
+  function buttonPressed() {
+    testData === "AAA" ? changeTestData(stringParam) : changeTestData("AAA");
+  }
 
-    return (
-        <div className="container">
-            <button onClick={buttonPressed}>{testData}</button>
-        </div>
-    )
+  return (
+    <div className="container">
+      <button onClick={buttonPressed}>{testData}</button>
+    </div>
+  );
 }
 
-export default AddCharacter
+export default AddCharacter;
