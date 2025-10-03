@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import AddCharacter from "./Components/addCharacter";
 import Navbar from "./Components/navbar";
+import Graph from "./Components/graph";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -10,8 +11,9 @@ function App() {
     <>
       <div className="container">
         <Navbar />
-        <AddCharacter stringParam="Sparkle" />
+        {/* <AddCharacter stringParam="Sparkle" />*/}
       </div>
+      <Graph></Graph>
     </>
   );
 }
