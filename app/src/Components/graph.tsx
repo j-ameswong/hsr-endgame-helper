@@ -11,7 +11,7 @@ function Graph() {
   }
 
   return (
-    <div className="row" id="graph-wrapper">
+    <div className="flex-column border" id="graph-wrapper">
       <div className="column cl-7" id="av-graph">
         <div id="line"></div>
       </div>

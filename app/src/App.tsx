@@ -3,6 +3,7 @@ import "./App.css";
 import AddCharacter from "./Components/addCharacter";
 import Navbar from "./Components/navbar";
 import Graph from "./Components/graph";
+import SpeedSettings from "./Components/calcSettings";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -14,6 +15,7 @@ function App() {
         {/* <AddCharacter stringParam="Sparkle" />*/}
       </div>
       <Graph></Graph>
+      <SpeedSettings />
     </>
   );
 }
