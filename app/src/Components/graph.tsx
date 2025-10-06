@@ -11,20 +11,22 @@ function Graph() {
   }
 
   return (
-    <div className="flex-column border" id="graph-wrapper">
-      <div className="column cl-7" id="av-graph">
+    <div className="row border" id="graph-wrapper">
+      <div className="col-8" id="av-graph">
         <div id="line"></div>
       </div>
-      <div className="column c1-3" id="selector">
+      <div className="col-4" id="selector">
         <label htmlFor="cycleCount">Cycle</label>
         <select id="cycleCount">
           <option>0</option>
         </select>
         <label htmlFor="gameMode">Game Mode</label>
-        <select id="gameMode" onChange={gameModeSelected}>
+        <select id="gameMode" onChange={(e) => setAv(e.target.value)}>
           <option value={150}>Memory of Chaos</option>
           <option value={300}>Anomaly Arbitration</option>
         </select>
+        <label htmlFor="current-av">Current AV: </label>
+        <input id="current-av" value={av}></input>
       </div>
     </div>
   );

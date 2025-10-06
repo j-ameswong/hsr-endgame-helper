@@ -15,23 +15,6 @@ img {
   min-height: 30px;
 }
 
-#graph-wrapper {
-  min-height: 20vh;
-  margin: 1vh;
-  border: 1px solid rgba(0, 0, 0, 0.4);
-  padding: 1vh;
-  align-items: center;
-}
-
-#av-graph {
-  width: 80%;
-  align-items: center;
-}
-
-#selector {
-  width: 20%;
-}
-
 #line {
   border: 1px solid black;
   width: 90%;
@@ -43,9 +26,14 @@ label {
 }
 
 #cycleCount {
-  width: 100%;
+  width: 10rem;
 }
 
 #gameMode {
-  width: 100%;
+  width: 10rem;
+}
+
+#av-graph {
+  min-height: 20vh;
+  justify-content: center;
 }
