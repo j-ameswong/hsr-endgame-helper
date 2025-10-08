@@ -10,7 +10,7 @@ function SpeedSettings() {
   const [dddRank, setDddRank] = useState<string>("S1");
 
   return (
-    <div className="container p-4 border rounded">
+    <div className="container p-4 m-4 w-50 border rounded align-items-center">
       <h4 className="mb-4">Speed Settings</h4>
 
       {/* Speed Slider */}
@@ -106,7 +106,7 @@ function SpeedSettings() {
                 onChange={(e) => setDddRank(e.target.value)}
               >
                 {["S1", "S2", "S3", "S4", "S5"].map((rank) => (
-                  <option key={rank} value={rank}>
+                  <option key={rank} value={0.14 + (Number(rank[-1]) * 0.02)}>
                     {rank}
                   </option>
                 ))}

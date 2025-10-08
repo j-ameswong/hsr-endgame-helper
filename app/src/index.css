@@ -15,12 +15,6 @@ img {
   min-height: 30px;
 }
 
-#line {
-  border: 1px solid black;
-  width: 90%;
-  height: 2px;
-}
-
 label {
   margin: 1vh;
 }
