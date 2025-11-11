@@ -1,0 +1,3 @@
+# Requirements for the CLI 
+1. Initialize character with speed
+2. Calculate action value 

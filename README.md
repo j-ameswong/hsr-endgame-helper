@@ -1,2 +1,6 @@
 # hsr-endgame-helper
-A simple calculator to help calculate action value and cycle count in HSR's Memory of Chaos endgame mode
+
+A simple calculator to help calculate action value and cycle count in
+HSR's Memory of Chaos endgame mode
+
+This really should be in its own repo
