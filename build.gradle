@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // or 21, depending on your JDK
+    }
+}
+
+application {
+    // Fully qualified main class name
+    mainClass = 'sim.Main'
+}
+
