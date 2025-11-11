@@ -31,7 +31,14 @@ class Character:
         self.av = self.av + float(10000 / self.speed)
 
 
+def fetch_characters(file):
+    with open(f"./{file}") as f:
+        chars = [line.split(",") for line in f.read().split("\n")[:-1]]
+    print(chars)
+
+
 def main():
+    fetch_characters("chars.txt")
     char_list = []
     add = True
     while add:
@@ -51,7 +58,6 @@ def main():
     actions = [[x.name, x.av] for x in sorted(char_list, key=lambda x: x.av)]
     while run:
         for x in char_list:
-            print(f"Action for char #{x.name}")
             x.act()
 
         for act in actions:
