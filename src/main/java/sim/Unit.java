@@ -1,6 +1,7 @@
 package sim;
 
 import java.util.ArrayList;
+import java.time.LocalTime;
 
 public class Unit {
   private String name;
@@ -8,8 +9,8 @@ public class Unit {
   private Boolean hasEagle;
   private Boolean hasDDD;
   private int supLevelDDD;
-  private ArrayList<Double> actionHistory;
-  private double currentAV;
+  private ArrayList<Action> actionHistory;
+  private double currentActionValue;
 
   public Unit(String name, double speed, Boolean hasEagle, Boolean hasDDD, int supLevelDDD) {
     this.name = name;
@@ -19,13 +20,32 @@ public class Unit {
     this.supLevelDDD = supLevelDDD;
 
     this.actionHistory = new ArrayList<>();
-    this.currentAV = 10000.0 / speed;
+    this.currentActionValue = 10000.0 / speed;
+  }
+
+  public Unit(double speed) {
+    this("Unit_" + String.valueOf(LocalTime.now().hashCode()),
+        speed,
+        false,
+        false,
+        0);
+
+    this.actionHistory = new ArrayList<>();
+    this.currentActionValue = 10000.0 / this.speed;
+  }
+
+  public Action generateAction() {
+    Action action = new Action(this, getCurrentActionValue());
+    double newAV = getCurrentActionValue() + getActionValueToNextAction();
+    setCurrentActionValue(newAV);
+
+    return action;
   }
 
   public String getSummary() {
     String info = "Character: " + getName() + "\n" +
         "Speed: " + getSpeed() + "\n" +
-        "AV: " + getCurrentAV() + "\n";
+        "AV: " + getCurrentActionValue() + "\n";
 
     return info;
   }
@@ -70,19 +90,24 @@ public class Unit {
     this.supLevelDDD = supLevelDDD;
   }
 
-  public ArrayList<Double> getActionHistory() {
+  public ArrayList<Action> getActionHistory() {
     return actionHistory;
   }
 
-  public void setActionHistory(ArrayList<Double> actionHistory) {
+  public void setActionHistory(ArrayList<Action> actionHistory) {
     this.actionHistory = actionHistory;
   }
 
-  public double getCurrentAV() {
-    return currentAV;
+  public double getCurrentActionValue() {
+    return currentActionValue;
   }
 
-  public void setCurrentAV(double currentAV) {
-    this.currentAV = currentAV;
+  public void setCurrentActionValue(double currentActionValue) {
+    this.currentActionValue = currentActionValue;
+  }
+
+  public double getActionValueToNextAction() {
+    double av = 10000.0 / getSpeed();
+    return av;
   }
 }
