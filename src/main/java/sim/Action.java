@@ -20,4 +20,9 @@ public class Action {
   public void setActionValue(double actionValue) {
     this.actionValue = actionValue;
   }
+
+  @Override
+  public String toString() {
+    return getUnit().getName() + " acting at " + String.valueOf(getActionValue());
+  }
 }

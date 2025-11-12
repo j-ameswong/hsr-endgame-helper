@@ -34,12 +34,12 @@ public class Unit {
     this.currentActionValue = 10000.0 / this.speed;
   }
 
-  public Action generateAction() {
+  public void takeAction() {
     Action action = new Action(this, getCurrentActionValue());
+    addActionToActionHistory(action);
+
     double newAV = getCurrentActionValue() + getActionValueToNextAction();
     setCurrentActionValue(newAV);
-
-    return action;
   }
 
   public String getSummary() {
@@ -96,6 +96,10 @@ public class Unit {
 
   public void setActionHistory(ArrayList<Action> actionHistory) {
     this.actionHistory = actionHistory;
+  }
+
+  public void addActionToActionHistory(Action action) {
+    this.actionHistory.add(action);
   }
 
   public double getCurrentActionValue() {
