@@ -42,12 +42,19 @@ public class Unit {
     setCurrentActionValue(newAV);
   }
 
-  public String getSummary() {
+  public String getState() {
     String info = "Character: " + getName() + "\n" +
         "Speed: " + getSpeed() + "\n" +
         "AV: " + getCurrentActionValue() + "\n";
 
     return info;
+  }
+
+  public String getSummary() {
+    String summary = "Character " + getName() +
+        " has " + getSpeed() + " SPD";
+
+    return summary;
   }
 
   public String getName() {
