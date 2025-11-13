@@ -1,6 +1,10 @@
 package sim;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+
 import sim.gamemodes.*;
 
 public class Sim {
@@ -17,6 +21,29 @@ public class Sim {
 
     this.totalActionValue = gameMode.firstCycleActionValue +
         (numCycles * gameMode.subsequentCyclesActionValue);
+  }
+
+  // default simulator
+  public Sim() {
+    ArrayList<Unit> units = new ArrayList<>();
+    units.addAll(Arrays.asList(
+        new Unit(133.4), new Unit(160)));
+
+    this(units, GameMode.MEMORY_OF_CHAOS, 1);
+  }
+
+  public void run() {
+    // Initialize
+    // Load each unit's first action
+    for (Unit u : getUnits()) {
+      if (u.getNextActionValue() < getTotalActionValue()) {
+        u.takeAction();
+      }
+    }
+
+    for (Action a : getActionHistory()) {
+      System.out.println(a);
+    }
   }
 
   public ArrayList<Unit> getUnits() {
@@ -49,5 +76,21 @@ public class Sim {
 
   public void setTotalActionValue(double totalActionValue) {
     this.totalActionValue = totalActionValue;
+  }
+
+  public ArrayList<Action> getActionHistory() {
+    ArrayList<Action> actionHistory = new ArrayList<>();
+    for (Unit u : getUnits()) {
+      actionHistory.addAll(u.getActionHistory());
+    }
+
+    actionHistory.sort(new ActionComparator());
+    return actionHistory;
+  }
+
+  public void printActionHistory() {
+    for (Action a : getActionHistory()) {
+      System.out.println(a);
+    }
   }
 }

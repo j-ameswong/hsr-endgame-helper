@@ -1,7 +1,6 @@
 package sim;
 
 import java.util.ArrayList;
-import java.time.LocalTime;
 
 public class Unit {
   private String name;
@@ -10,7 +9,6 @@ public class Unit {
   private Boolean hasDDD;
   private int supLevelDDD;
   private ArrayList<Action> actionHistory;
-  private double currentActionValue;
 
   public Unit(String name, double speed, Boolean hasEagle, Boolean hasDDD, int supLevelDDD) {
     this.name = name;
@@ -20,32 +18,33 @@ public class Unit {
     this.supLevelDDD = supLevelDDD;
 
     this.actionHistory = new ArrayList<>();
-    this.currentActionValue = 10000.0 / speed;
   }
 
   public Unit(double speed) {
-    this("Unit_" + String.valueOf(LocalTime.now().hashCode()),
+    this("Unit_" + String.valueOf(Math.random()).substring(0, 10),
         speed,
         false,
         false,
         0);
 
     this.actionHistory = new ArrayList<>();
-    this.currentActionValue = 10000.0 / this.speed;
   }
 
   public void takeAction() {
-    Action action = new Action(this, getCurrentActionValue());
-    addActionToActionHistory(action);
+    Action action;
+    if (getActionHistory().isEmpty()) {
+      action = new Action(this, getActionValueToNextAction());
+    } else {
+      action = new Action(this, getLastAction());
+    }
 
-    double newAV = getCurrentActionValue() + getActionValueToNextAction();
-    setCurrentActionValue(newAV);
+    addActionToActionHistory(action);
   }
 
   public String getState() {
     String info = "Character: " + getName() + "\n" +
         "Speed: " + getSpeed() + "\n" +
-        "AV: " + getCurrentActionValue() + "\n";
+        "Last Action: " + getLastAction() + "\n";
 
     return info;
   }
@@ -109,12 +108,12 @@ public class Unit {
     this.actionHistory.add(action);
   }
 
-  public double getCurrentActionValue() {
-    return currentActionValue;
+  public Action getLastAction() {
+    return getActionHistory().getLast();
   }
 
-  public void setCurrentActionValue(double currentActionValue) {
-    this.currentActionValue = currentActionValue;
+  public double getNextActionValue() {
+    return getLastAction().getActionValue() + getActionValueToNextAction();
   }
 
   public double getActionValueToNextAction() {
