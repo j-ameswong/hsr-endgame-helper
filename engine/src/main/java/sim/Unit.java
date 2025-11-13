@@ -21,7 +21,7 @@ public class Unit {
   }
 
   public Unit(double speed) {
-    this("Unit_" + String.valueOf(Math.random()).substring(0, 10),
+    this("Unit_" + String.valueOf(Math.random()).substring(2, 10),
         speed,
         false,
         false,
@@ -113,7 +113,12 @@ public class Unit {
   }
 
   public double getNextActionValue() {
-    return getLastAction().getActionValue() + getActionValueToNextAction();
+    double actionValue = getActionValueToNextAction();
+    if (!getActionHistory().isEmpty()) {
+      actionValue += getLastAction().getActionValue();
+    }
+
+    return actionValue;
   }
 
   public double getActionValueToNextAction() {
