@@ -1,0 +1,33 @@
+html {
+  margin: auto;
+  min-height: 100vh;
+}
+
+img {
+  padding: 1em;
+}
+
+#logo-title {
+  width: 10vw;
+}
+
+#navbar {
+  min-height: 30px;
+}
+
+label {
+  margin: 1vh;
+}
+
+#cycleCount {
+  width: 10rem;
+}
+
+#gameMode {
+  width: 10rem;
+}
+
+#av-graph {
+  min-height: 20vh;
+  justify-content: center;
+}
