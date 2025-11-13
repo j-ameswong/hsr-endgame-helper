@@ -2,21 +2,28 @@ package sim;
 
 public class Action {
   private final Unit unit;
+
+  private final ActionType actionType;
   private double actionValue;
   private Action prevAction;
   private Action nextAction;
 
-  public Action(Unit unit, double actionValue) {
+  public Action(Unit unit, double actionValue, ActionType actionType) {
     this.unit = unit;
     this.actionValue = actionValue;
+    this.actionType = actionType;
   }
 
-  public Action(Unit unit, Action prevAction) {
+  public Action(Unit unit, Action prevAction, ActionType actionType) {
     this.unit = unit;
     this.prevAction = prevAction;
     prevAction.setNextAction(this);
+    this.actionType = actionType;
 
     this.actionValue = prevAction.actionValue + (10000.0 / unit.getSpeed());
+  }
+
+  public void execute() {
   }
 
   public Unit getUnit() {
@@ -47,8 +54,12 @@ public class Action {
     this.nextAction = nextAction;
   }
 
+  public ActionType getActionType() {
+    return actionType;
+  }
+
   @Override
   public String toString() {
-    return getUnit().getName() + " <ACTION> at " + String.format("%.2f", getActionValue());
+    return getUnit().getName() + " " + getActionType() + " at " + String.format("%.2f", getActionValue());
   }
 }

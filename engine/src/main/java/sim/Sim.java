@@ -24,7 +24,7 @@ public class Sim {
   public Sim() {
     ArrayList<Unit> units = new ArrayList<>();
     units.addAll(Arrays.asList(
-        new Unit(133.4), new Unit(160)));
+        new Unit(133.4), new Unit(160, true, false)));
 
     this(units, GameMode.MEMORY_OF_CHAOS, 1);
   }
@@ -32,17 +32,28 @@ public class Sim {
   public void run() {
     // Initialize
     // Load each unit's first action
-    makeAllUnitsTakeAction();
+    unitsEnterBattle();
 
     ArrayList<Action> actionLog = getActionLog();
     Boolean wasChanged;
     do {
       wasChanged = false;
       for (Action a : actionLog) {
+        // Turn starts
         if (a.getUnit().getNextActionValue() < getTotalActionValue()) {
-          a.getUnit().takeAction();
-          wasChanged = true;
+          ActionType actionType;
+          if (a.getUnit().hasDDD()) {
+            actionType = ActionType.ULTIMATE;
+          } else {
+            actionType = ActionType.BASIC;
+          }
+
+        a.getUnit().takeAction(actionType);
+        wasChanged = true;
         }
+
+        // Turn ends 
+        if (true) // if have enough energy...
       }
     } while (wasChanged);
 
@@ -52,10 +63,10 @@ public class Sim {
     }
   }
 
-  public void makeAllUnitsTakeAction() {
+  public void unitsEnterBattle() {
     for (Unit u : getUnits()) {
       if (u.getNextActionValue() < getTotalActionValue()) {
-        u.takeAction();
+        u.takeAction(ActionType.ENTER_BATTLE);
       }
     }
   }

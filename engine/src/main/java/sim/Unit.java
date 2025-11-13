@@ -35,12 +35,12 @@ public class Unit {
     this.hasDDD = hasDDD;
   }
 
-  public void takeAction() {
+  public void takeAction(ActionType actionType) {
     Action action;
     if (getActionLog().isEmpty()) {
-      action = new Action(this, getActionValue());
+      action = new Action(this, getActionValue(), actionType);
     } else {
-      action = new Action(this, getLastAction());
+      action = new Action(this, getLastAction(), actionType);
     }
 
     addActionToActionLog(action);
@@ -77,20 +77,12 @@ public class Unit {
     this.speed = speed;
   }
 
-  public Boolean getHasEagle() {
+  public Boolean hasEagle() {
     return hasEagle;
   }
 
-  public void setHasEagle(Boolean hasEagle) {
-    this.hasEagle = hasEagle;
-  }
-
-  public Boolean getHasDDD() {
-    return hasDDD;
-  }
-
-  public void setHasDDD(Boolean hasDDD) {
-    this.hasDDD = hasDDD;
+  public Boolean hasDDD() {
+    return this.hasDDD;
   }
 
   public int getSupLevelDDD() {
