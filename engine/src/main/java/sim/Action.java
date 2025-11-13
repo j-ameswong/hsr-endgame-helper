@@ -16,7 +16,7 @@ public class Action {
     this.prevAction = prevAction;
     prevAction.setNextAction(this);
 
-    this.actionValue = prevAction.actionValue + (10000 / unit.getSpeed());
+    this.actionValue = prevAction.actionValue + (10000.0 / unit.getSpeed());
   }
 
   public Unit getUnit() {
@@ -49,6 +49,6 @@ public class Action {
 
   @Override
   public String toString() {
-    return getUnit().getName() + " <ACTION> at " + String.valueOf(getActionValue());
+    return getUnit().getName() + " <ACTION> at " + String.format("%.2f", getActionValue());
   }
 }

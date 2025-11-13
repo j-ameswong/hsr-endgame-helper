@@ -8,7 +8,8 @@ public class Unit {
   private Boolean hasEagle;
   private Boolean hasDDD;
   private int supLevelDDD;
-  private ArrayList<Action> actionHistory;
+  private double actionValueToNext;
+  private ArrayList<Action> actionLog;
 
   public Unit(String name, double speed, Boolean hasEagle, Boolean hasDDD, int supLevelDDD) {
     this.name = name;
@@ -17,7 +18,7 @@ public class Unit {
     this.hasDDD = hasDDD;
     this.supLevelDDD = supLevelDDD;
 
-    this.actionHistory = new ArrayList<>();
+    this.actionLog = new ArrayList<>();
   }
 
   public Unit(double speed) {
@@ -26,19 +27,23 @@ public class Unit {
         false,
         false,
         0);
+  }
 
-    this.actionHistory = new ArrayList<>();
+  public Unit(double speed, Boolean hasDDD, Boolean hasEagle) {
+    this(speed);
+    this.hasEagle = hasEagle;
+    this.hasDDD = hasDDD;
   }
 
   public void takeAction() {
     Action action;
-    if (getActionHistory().isEmpty()) {
-      action = new Action(this, getActionValueToNextAction());
+    if (getActionLog().isEmpty()) {
+      action = new Action(this, getActionValue());
     } else {
       action = new Action(this, getLastAction());
     }
 
-    addActionToActionHistory(action);
+    addActionToActionLog(action);
   }
 
   public String getState() {
@@ -96,32 +101,32 @@ public class Unit {
     this.supLevelDDD = supLevelDDD;
   }
 
-  public ArrayList<Action> getActionHistory() {
-    return actionHistory;
+  public ArrayList<Action> getActionLog() {
+    return actionLog;
   }
 
-  public void setActionHistory(ArrayList<Action> actionHistory) {
-    this.actionHistory = actionHistory;
+  public void setActionLog(ArrayList<Action> actionLog) {
+    this.actionLog = actionLog;
   }
 
-  public void addActionToActionHistory(Action action) {
-    this.actionHistory.add(action);
+  public void addActionToActionLog(Action action) {
+    this.actionLog.add(action);
   }
 
   public Action getLastAction() {
-    return getActionHistory().getLast();
+    return getActionLog().getLast();
   }
 
   public double getNextActionValue() {
-    double actionValue = getActionValueToNextAction();
-    if (!getActionHistory().isEmpty()) {
+    double actionValue = getActionValue();
+    if (!getActionLog().isEmpty()) {
       actionValue += getLastAction().getActionValue();
     }
 
     return actionValue;
   }
 
-  public double getActionValueToNextAction() {
+  public double getActionValue() {
     double av = 10000.0 / getSpeed();
     return av;
   }

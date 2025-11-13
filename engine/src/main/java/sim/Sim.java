@@ -2,14 +2,11 @@ package sim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
 import sim.gamemodes.*;
 
 public class Sim {
   private ArrayList<Unit> units;
-  // TODO: make gameMode enum with AV baked in
   private GameMode gameMode;
   private int numCycles;
   private double totalActionValue;
@@ -35,14 +32,31 @@ public class Sim {
   public void run() {
     // Initialize
     // Load each unit's first action
+    makeAllUnitsTakeAction();
+
+    ArrayList<Action> actionLog = getActionLog();
+    Boolean wasChanged;
+    do {
+      wasChanged = false;
+      for (Action a : actionLog) {
+        if (a.getUnit().getNextActionValue() < getTotalActionValue()) {
+          a.getUnit().takeAction();
+          wasChanged = true;
+        }
+      }
+    } while (wasChanged);
+
+    // List all actions
+    for (Action a : getActionLog()) {
+      System.out.println(a);
+    }
+  }
+
+  public void makeAllUnitsTakeAction() {
     for (Unit u : getUnits()) {
       if (u.getNextActionValue() < getTotalActionValue()) {
         u.takeAction();
       }
-    }
-
-    for (Action a : getActionHistory()) {
-      System.out.println(a);
     }
   }
 
@@ -78,18 +92,18 @@ public class Sim {
     this.totalActionValue = totalActionValue;
   }
 
-  public ArrayList<Action> getActionHistory() {
-    ArrayList<Action> actionHistory = new ArrayList<>();
+  public ArrayList<Action> getActionLog() {
+    ArrayList<Action> actionLog = new ArrayList<>();
     for (Unit u : getUnits()) {
-      actionHistory.addAll(u.getActionHistory());
+      actionLog.addAll(u.getActionLog());
     }
 
-    actionHistory.sort(new ActionComparator());
-    return actionHistory;
+    actionLog.sort(new ActionComparator());
+    return actionLog;
   }
 
-  public void printActionHistory() {
-    for (Action a : getActionHistory()) {
+  public void printActionLog() {
+    for (Action a : getActionLog()) {
       System.out.println(a);
     }
   }
