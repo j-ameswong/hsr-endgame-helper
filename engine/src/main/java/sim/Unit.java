@@ -8,7 +8,6 @@ public class Unit {
   private Boolean hasEagle;
   private Boolean hasDDD;
   private int supLevelDDD;
-  private double actionValueToNext;
   private ArrayList<Action> actionLog;
 
   public Unit(String name, double speed, Boolean hasEagle, Boolean hasDDD, int supLevelDDD) {
@@ -35,7 +34,7 @@ public class Unit {
     this.hasDDD = hasDDD;
   }
 
-  public void takeAction(ActionType actionType) {
+  public int takeAction(ActionType actionType) {
     Action action;
     if (getActionLog().isEmpty()) {
       action = new Action(this, getActionValue(), actionType);
@@ -44,6 +43,7 @@ public class Unit {
     }
 
     addActionToActionLog(action);
+    return 1; // TODO: Add enum for types of actions, to trigger AA and amount etc...
   }
 
   public String getState() {
@@ -111,11 +111,12 @@ public class Unit {
 
   public double getNextActionValue() {
     double actionValue = getActionValue();
-    if (!getActionLog().isEmpty()) {
-      actionValue += getLastAction().getActionValue();
+    if (getActionLog().isEmpty() ||
+        getLastAction().getActionType() == ActionType.ENTER_BATTLE) {
+      return actionValue;
+    } else {
+      return actionValue += getLastAction().getActionValue();
     }
-
-    return actionValue;
   }
 
   public double getActionValue() {

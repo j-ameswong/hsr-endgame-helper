@@ -44,23 +44,33 @@ public class Sim {
           ActionType actionType;
           if (a.getUnit().hasDDD()) {
             actionType = ActionType.ULTIMATE;
+            // for (int i = actionLog.indexOf(a) + 1; i < actionLog.size(); i++) {
+            // System.out.println("Advance action: " + actionLog.get(i));
+            // }
           } else {
             actionType = ActionType.BASIC;
           }
 
-        a.getUnit().takeAction(actionType);
-        wasChanged = true;
+          a.getUnit().takeAction(actionType);
+          wasChanged = true;
         }
 
-        // Turn ends 
-        if (true) // if have enough energy...
+        // Turn ends
+        if (true) {
+
+        } // if have enough energy...
       }
+
+      for (Action a : getActionLog(1)) {
+        System.out.println(a);
+      }
+      System.out.println("--------------------------");
     } while (wasChanged);
 
     // List all actions
-    for (Action a : getActionLog()) {
-      System.out.println(a);
-    }
+    // for (Action a : getActionLog()) {
+    // System.out.println(a);
+    // }
   }
 
   public void unitsEnterBattle() {
@@ -110,6 +120,15 @@ public class Sim {
     }
 
     actionLog.sort(new ActionComparator());
+    return actionLog;
+  }
+
+  public ArrayList<Action> getActionLog(int unordered) {
+    ArrayList<Action> actionLog = new ArrayList<>();
+    for (Unit u : getUnits()) {
+      actionLog.addAll(u.getActionLog());
+    }
+
     return actionLog;
   }
 

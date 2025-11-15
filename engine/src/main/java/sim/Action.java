@@ -20,7 +20,7 @@ public class Action {
     prevAction.setNextAction(this);
     this.actionType = actionType;
 
-    this.actionValue = prevAction.actionValue + (10000.0 / unit.getSpeed());
+    this.actionValue = unit.getNextActionValue();
   }
 
   public void execute() {
