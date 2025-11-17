@@ -2,8 +2,9 @@ package sim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import sim.gamemodes.*;
+import sim.gamemodes.GameMode;
 
 public class Sim {
   private ArrayList<Unit> units;
@@ -16,6 +17,7 @@ public class Sim {
     this.units = units;
     this.gameMode = gameMode;
     this.numCycles = numCycles;
+    this.actionLog = new ArrayList<>();
 
     this.totalActionValue = gameMode.firstCycleActionValue +
         (numCycles * gameMode.subsequentCyclesActionValue);
@@ -36,25 +38,29 @@ public class Sim {
     unitsEnterBattle();
 
     ArrayList<Action> actionLog = getActionLog();
-    Boolean wasChanged;
+    double firstAV;
+    boolean wasChanged = false;
     do {
-      wasChanged = false;
-      for (Action a : actionLog) {
+      firstAV = actionLog.getFirst().getActionValue();
+      for (Action a : getPendingActions(firstAV)) {
         // Turn starts
         if (a.getUnit().getNextActionValue() < getTotalActionValue()) {
-          ActionType actionType;
-          if (a.getUnit().hasDDD()) {
-            actionType = ActionType.ULTIMATE;
-            // for (int i = actionLog.indexOf(a) + 1; i < actionLog.size(); i++) {
-            // System.out.println("Advance action: " + actionLog.get(i));
-            // }
-          } else {
-            actionType = ActionType.BASIC;
-          }
-
-          a.getUnit().takeAction(actionType);
+          a.getUnit().takeAction(ActionType.BASIC);
           wasChanged = true;
+        } else {
+          wasChanged = false;
         }
+        // ActionType actionType;
+        // if (a.getUnit().hasDDD()) {
+        // actionType = ActionType.ULTIMATE;
+        // // for (int i = actionLog.indexOf(a) + 1; i < actionLog.size(); i++) {
+        // // System.out.println("Advance action: " + actionLog.get(i));
+        // // }
+        // } else {
+        // actionType = ActionType.BASIC;
+        // }
+        //
+        // a.getUnit().takeAction(actionType);
 
         // Turn ends
         if (true) {
@@ -62,24 +68,20 @@ public class Sim {
         } // if have enough energy...
       }
 
-      for (Action a : getActionLog()) {
-        System.out.println(a);
-      }
-      System.out.println("--------------------------");
     } while (wasChanged);
 
     // List all actions
-    // for (Action a : getActionLog()) {
-    // System.out.println(a);
-    // }
+    for (Action a : getActionLog()) {
+      System.out.println(a);
+    }
   }
 
   public void unitsEnterBattle() {
     for (Unit u : getUnits()) {
+      System.out.println("Setting up character " + u.getName());
+      u.setSim(this);
       if (u.getNextActionValue() < getTotalActionValue()) {
         u.takeAction(ActionType.ENTER_BATTLE);
-
-        System.out.println(u.getActionLog().get(0));
       }
     }
   }
@@ -118,6 +120,12 @@ public class Sim {
 
   public ArrayList<Action> getActionLog() {
     return this.actionLog;
+  }
+
+  public List<Action> getPendingActions(double actionValue) {
+    return getActionLog().stream()
+        .filter(action -> action.getActionValue() >= actionValue)
+        .toList();
   }
 
   public void addToActionLog(Action a) {

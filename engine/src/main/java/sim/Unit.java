@@ -2,7 +2,6 @@ package sim;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Unit {
   private String name;
@@ -29,6 +28,7 @@ public class Unit {
   }
 
   public Unit(double speed, Boolean hasDDD, Boolean hasEagle) {
+    this(speed);
     this.hasEagle = hasEagle;
     this.hasDDD = hasDDD;
   }
@@ -92,10 +92,15 @@ public class Unit {
     this.supLevelDDD = supLevelDDD;
   }
 
+  // List of actions reference actionLog in Sim()
   public List<Action> getActionLog() {
-    return getSim().getActionLog().stream()
-        .filter(action -> action.getUnit().equals(this))
-        .toList();
+    if (getSim().getActionLog().isEmpty()) {
+      return new ArrayList<>();
+    } else {
+      return getSim().getActionLog().stream()
+          .filter(action -> action.getUnit().equals(this))
+          .toList();
+    }
   }
 
   public Action getLastAction() {
@@ -134,7 +139,7 @@ public class Unit {
   }
 
   public Sim getSim() {
-    return sim;
+    return this.sim;
   }
 
   public void setSim(Sim sim) {
