@@ -7,6 +7,7 @@ import sim.gamemodes.*;
 
 public class Sim {
   private ArrayList<Unit> units;
+  private ArrayList<Action> actionLog;
   private GameMode gameMode;
   private int numCycles;
   private double totalActionValue;
@@ -61,7 +62,7 @@ public class Sim {
         } // if have enough energy...
       }
 
-      for (Action a : getActionLog(1)) {
+      for (Action a : getActionLog()) {
         System.out.println(a);
       }
       System.out.println("--------------------------");
@@ -77,6 +78,8 @@ public class Sim {
     for (Unit u : getUnits()) {
       if (u.getNextActionValue() < getTotalActionValue()) {
         u.takeAction(ActionType.ENTER_BATTLE);
+
+        System.out.println(u.getActionLog().get(0));
       }
     }
   }
@@ -114,27 +117,10 @@ public class Sim {
   }
 
   public ArrayList<Action> getActionLog() {
-    ArrayList<Action> actionLog = new ArrayList<>();
-    for (Unit u : getUnits()) {
-      actionLog.addAll(u.getActionLog());
-    }
-
-    actionLog.sort(new ActionComparator());
-    return actionLog;
+    return this.actionLog;
   }
 
-  public ArrayList<Action> getActionLog(int unordered) {
-    ArrayList<Action> actionLog = new ArrayList<>();
-    for (Unit u : getUnits()) {
-      actionLog.addAll(u.getActionLog());
-    }
-
-    return actionLog;
-  }
-
-  public void printActionLog() {
-    for (Action a : getActionLog()) {
-      System.out.println(a);
-    }
+  public void addToActionLog(Action a) {
+    getActionLog().add(a);
   }
 }

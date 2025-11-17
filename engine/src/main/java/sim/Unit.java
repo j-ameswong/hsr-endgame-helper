@@ -1,6 +1,8 @@
 package sim;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Unit {
   private String name;
@@ -8,7 +10,7 @@ public class Unit {
   private Boolean hasEagle;
   private Boolean hasDDD;
   private int supLevelDDD;
-  private ArrayList<Action> actionLog;
+  private Sim sim;
 
   public Unit(String name, double speed, Boolean hasEagle, Boolean hasDDD, int supLevelDDD) {
     this.name = name;
@@ -16,8 +18,6 @@ public class Unit {
     this.hasEagle = hasEagle;
     this.hasDDD = hasDDD;
     this.supLevelDDD = supLevelDDD;
-
-    this.actionLog = new ArrayList<>();
   }
 
   public Unit(double speed) {
@@ -29,7 +29,6 @@ public class Unit {
   }
 
   public Unit(double speed, Boolean hasDDD, Boolean hasEagle) {
-    this(speed);
     this.hasEagle = hasEagle;
     this.hasDDD = hasDDD;
   }
@@ -42,7 +41,7 @@ public class Unit {
       action = new Action(this, getLastAction(), actionType);
     }
 
-    addActionToActionLog(action);
+    getSim().addToActionLog(action);
     return 1; // TODO: Add enum for types of actions, to trigger AA and amount etc...
   }
 
@@ -93,16 +92,10 @@ public class Unit {
     this.supLevelDDD = supLevelDDD;
   }
 
-  public ArrayList<Action> getActionLog() {
-    return actionLog;
-  }
-
-  public void setActionLog(ArrayList<Action> actionLog) {
-    this.actionLog = actionLog;
-  }
-
-  public void addActionToActionLog(Action action) {
-    this.actionLog.add(action);
+  public List<Action> getActionLog() {
+    return getSim().getActionLog().stream()
+        .filter(action -> action.getUnit().equals(this))
+        .toList();
   }
 
   public Action getLastAction() {
@@ -122,5 +115,29 @@ public class Unit {
   public double getActionValue() {
     double av = 10000.0 / getSpeed();
     return av;
+  }
+
+  public Boolean getHasEagle() {
+    return hasEagle;
+  }
+
+  public void setHasEagle(Boolean hasEagle) {
+    this.hasEagle = hasEagle;
+  }
+
+  public Boolean getHasDDD() {
+    return hasDDD;
+  }
+
+  public void setHasDDD(Boolean hasDDD) {
+    this.hasDDD = hasDDD;
+  }
+
+  public Sim getSim() {
+    return sim;
+  }
+
+  public void setSim(Sim sim) {
+    this.sim = sim;
   }
 }
