@@ -2,6 +2,8 @@ package sim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import sim.gamemodes.GameMode;
@@ -42,7 +44,7 @@ public class Sim {
     boolean wasChanged = false;
     do {
       firstAV = actionLog.getFirst().getActionValue();
-      for (Action a : getPendingActions(firstAV)) {
+      for (Action a : getPendingActions(firstAV - .001)) {
         // Turn starts
         if (a.getUnit().getNextActionValue() < getTotalActionValue()) {
           a.getUnit().takeAction(ActionType.BASIC);
@@ -122,10 +124,15 @@ public class Sim {
     return this.actionLog;
   }
 
+  // public double getFirstActionValue
+
   public List<Action> getPendingActions(double actionValue) {
-    return getActionLog().stream()
-        .filter(action -> action.getActionValue() >= actionValue)
+    List<Action> pendingActions = getActionLog().stream()
+        .filter(action -> action.getActionValue() > actionValue)
         .toList();
+
+    pendingActions.sort();
+    return pendingActions;
   }
 
   public void addToActionLog(Action a) {
