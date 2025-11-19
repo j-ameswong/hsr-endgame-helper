@@ -24,6 +24,7 @@ public class Action {
   }
 
   public void execute() {
+    getUnit().getSim().addToActionLog(this);
   }
 
   public Unit getUnit() {

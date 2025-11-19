@@ -2,8 +2,6 @@ package sim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import sim.gamemodes.GameMode;
@@ -11,6 +9,8 @@ import sim.gamemodes.GameMode;
 public class Sim {
   private ArrayList<Unit> units;
   private ArrayList<Action> actionLog;
+  private List<Action> pendingActions;
+  private ActionHandler actionHandler;
   private GameMode gameMode;
   private int numCycles;
   private double totalActionValue;
@@ -29,68 +29,65 @@ public class Sim {
   public Sim() {
     ArrayList<Unit> units = new ArrayList<>();
     units.addAll(Arrays.asList(
-        new Unit(133.4), new Unit(160, true, false)));
+        new Unit("Blade", 134, true, false, 0),
+        new Unit("Sparkle", 160, true, true, 5)));
 
     this(units, GameMode.MEMORY_OF_CHAOS, 1);
   }
 
   public void run() {
     // Initialize
+    actionHandler = new ActionHandler(this);
+    System.out.println(this);
     // Load each unit's first action
     unitsEnterBattle();
 
-    boolean wasChanged = false;
-    List<Action> pendingActions = new ArrayList<>(getActionLog()
-        .stream()
-        .sorted(new ActionComparator())
-        .toList());
+    boolean actionWasTaken = false;
+    this.pendingActions = getPendingActions(-1);
     // Battle begins, get turns sorted by AV
+    List<Action> toAdd = new ArrayList<>();
     do {
-      List<Action> toRemove = new ArrayList<>();
+      System.out.println("--------------------------\n" + pendingActions);
       for (Action a : pendingActions) {
         // Turn starts
         Unit currentUnit = a.getUnit();
+        // System.out.println("Next turn for " + currentUnit.getName() + " at " +
         if (currentUnit.getNextActionValue() < getTotalActionValue()) {
-          toRemove.add(currentUnit.takeAction(ActionType.BASIC));
-          wasChanged = true;
+          Action newAction = currentUnit.generateAction(ActionType.ULTIMATE);
+          ActionHandler.execute(newAction);
+          toAdd.add(newAction);
+          actionWasTaken = true;
         } else {
-          wasChanged = false;
+          actionWasTaken = false;
         }
-
-        // ActionType actionType;
-        // if (a.getUnit().hasDDD()) {
-        // actionType = ActionType.ULTIMATE;
-        // // for (int i = actionLog.indexOf(a) + 1; i < actionLog.size(); i++) {
-        // // System.out.println("Advance action: " + actionLog.get(i));
-        // // }
-        // } else {
-        // actionType = ActionType.BASIC;
-        // }
-        //
-        // a.getUnit().takeAction(actionType);
-
-        // Turn ends
-        if (true) {
-
-        } // if have enough energy...
       }
-      pendingActions.removeAll(toRemove);
-    } while (wasChanged);
+      if (actionWasTaken) {
+        pendingActions = new ArrayList<>(toAdd);
+      } else {
+        pendingActions = new ArrayList<>();
+      }
+
+      toAdd = new ArrayList<>();
+      // System.out.println("Current list of pending actions: " +
+      // getPendingActions());
+    } while (actionWasTaken);
 
     // List all actions
     for (Action a : getActionLog()) {
-      System.out.println(a);
+      System.out.println("- " + a);
     }
   }
 
   public void unitsEnterBattle() {
     for (Unit u : getUnits()) {
-      System.out.println("Setting up character " + u.getName() + "...");
+      System.out.println("> Setting up character " + u.getName() + "...");
       u.setSim(this);
       if (u.getNextActionValue() < getTotalActionValue()) {
-        u.takeAction(ActionType.ENTER_BATTLE);
+        ActionHandler.execute(u.generateAction(ActionType.ENTER_BATTLE));
       }
     }
+
+    System.out.println("\n");
   }
 
   public ArrayList<Unit> getUnits() {
@@ -125,6 +122,14 @@ public class Sim {
     this.totalActionValue = totalActionValue;
   }
 
+  public List<Action> getPendingActions() {
+    return this.pendingActions;
+  }
+
+  public void addToPendingActions(Action a) {
+    getPendingActions().add(a);
+  }
+
   public ArrayList<Action> getActionLog() {
     return this.actionLog;
   }
@@ -132,13 +137,22 @@ public class Sim {
   // public double getFirstActionValue
 
   public List<Action> getPendingActions(double actionValue) {
-    return getActionLog().stream()
+    return new ArrayList<>(getActionLog().stream()
         .filter(action -> action.getActionValue() > actionValue)
         .sorted(new ActionComparator())
-        .toList();
+        .toList());
   }
 
   public void addToActionLog(Action a) {
     getActionLog().add(a);
+  }
+
+  @Override
+  public String toString() {
+    return "Simulator Setup: \n" +
+        "> Units: " + getUnits() + "\n" +
+        "> Gamemode: " + getGameMode().name + "\n" +
+        "> Cycle count: " + getNumCycles() + " (" + getTotalActionValue() + "AV)" +
+        ".\n.\n.\n.";
   }
 }

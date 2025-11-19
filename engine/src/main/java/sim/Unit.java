@@ -33,7 +33,7 @@ public class Unit {
     this.hasDDD = hasDDD;
   }
 
-  public Action takeAction(ActionType actionType) {
+  public Action generateAction(ActionType actionType) {
     Action action;
     if (getActionLog().isEmpty()) {
       action = new Action(this, getActionValue(), actionType);
@@ -41,7 +41,7 @@ public class Unit {
       action = new Action(this, getLastAction(), actionType);
     }
 
-    getSim().addToActionLog(action);
+    System.out.println("Generating action for unit " + getName());
     return action; // TODO: Add enum for types of actions, to trigger AA and amount etc...
   }
 
@@ -109,11 +109,11 @@ public class Unit {
 
   public double getNextActionValue() {
     double actionValue = getActionValue();
-    if (getActionLog().isEmpty() ||
-        getLastAction().getActionType() == ActionType.ENTER_BATTLE) {
-      return actionValue;
+    if (!getActionLog().isEmpty() &&
+        !getLastAction().getActionType().equals(ActionType.ENTER_BATTLE)) {
+      return actionValue + getLastAction().getActionValue();
     } else {
-      return actionValue += getLastAction().getActionValue();
+      return actionValue;
     }
   }
 
