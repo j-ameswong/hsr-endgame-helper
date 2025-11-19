@@ -33,7 +33,7 @@ public class Unit {
     this.hasDDD = hasDDD;
   }
 
-  public int takeAction(ActionType actionType) {
+  public Action takeAction(ActionType actionType) {
     Action action;
     if (getActionLog().isEmpty()) {
       action = new Action(this, getActionValue(), actionType);
@@ -42,7 +42,7 @@ public class Unit {
     }
 
     getSim().addToActionLog(action);
-    return 1; // TODO: Add enum for types of actions, to trigger AA and amount etc...
+    return action; // TODO: Add enum for types of actions, to trigger AA and amount etc...
   }
 
   public String getState() {

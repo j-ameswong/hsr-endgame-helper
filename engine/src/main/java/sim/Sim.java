@@ -39,19 +39,24 @@ public class Sim {
     // Load each unit's first action
     unitsEnterBattle();
 
-    ArrayList<Action> actionLog = getActionLog();
-    double firstAV;
     boolean wasChanged = false;
+    List<Action> pendingActions = new ArrayList<>(getActionLog()
+        .stream()
+        .sorted(new ActionComparator())
+        .toList());
+    // Battle begins, get turns sorted by AV
     do {
-      firstAV = actionLog.getFirst().getActionValue();
-      for (Action a : getPendingActions(firstAV - .001)) {
+      List<Action> toRemove = new ArrayList<>();
+      for (Action a : pendingActions) {
         // Turn starts
-        if (a.getUnit().getNextActionValue() < getTotalActionValue()) {
-          a.getUnit().takeAction(ActionType.BASIC);
+        Unit currentUnit = a.getUnit();
+        if (currentUnit.getNextActionValue() < getTotalActionValue()) {
+          toRemove.add(currentUnit.takeAction(ActionType.BASIC));
           wasChanged = true;
         } else {
           wasChanged = false;
         }
+
         // ActionType actionType;
         // if (a.getUnit().hasDDD()) {
         // actionType = ActionType.ULTIMATE;
@@ -69,7 +74,7 @@ public class Sim {
 
         } // if have enough energy...
       }
-
+      pendingActions.removeAll(toRemove);
     } while (wasChanged);
 
     // List all actions
@@ -80,7 +85,7 @@ public class Sim {
 
   public void unitsEnterBattle() {
     for (Unit u : getUnits()) {
-      System.out.println("Setting up character " + u.getName());
+      System.out.println("Setting up character " + u.getName() + "...");
       u.setSim(this);
       if (u.getNextActionValue() < getTotalActionValue()) {
         u.takeAction(ActionType.ENTER_BATTLE);
@@ -127,12 +132,10 @@ public class Sim {
   // public double getFirstActionValue
 
   public List<Action> getPendingActions(double actionValue) {
-    List<Action> pendingActions = getActionLog().stream()
+    return getActionLog().stream()
         .filter(action -> action.getActionValue() > actionValue)
+        .sorted(new ActionComparator())
         .toList();
-
-    pendingActions.sort();
-    return pendingActions;
   }
 
   public void addToActionLog(Action a) {
