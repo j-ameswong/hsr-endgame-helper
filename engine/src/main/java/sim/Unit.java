@@ -41,7 +41,6 @@ public class Unit {
       action = new Action(this, getLastAction(), actionType);
     }
 
-    System.out.println("Generating action for unit " + getName());
     return action; // TODO: Add enum for types of actions, to trigger AA and amount etc...
   }
 

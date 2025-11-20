@@ -9,7 +9,7 @@ import sim.gamemodes.GameMode;
 public class Sim {
   private ArrayList<Unit> units;
   private ArrayList<Action> actionLog;
-  private List<Action> pendingActions;
+  private List<Action> lastActions;
   private ActionHandler actionHandler;
   private GameMode gameMode;
   private int numCycles;
@@ -43,36 +43,24 @@ public class Sim {
     unitsEnterBattle();
 
     boolean actionWasTaken = false;
-    this.pendingActions = getPendingActions(-1);
     // Battle begins, get turns sorted by AV
-    List<Action> toAdd = new ArrayList<>();
     do {
-      System.out.println("--------------------------\n" + pendingActions);
-      for (Action a : pendingActions) {
+      refreshLastActions();
+      System.out.println("--------------------------\n" + getLastActions());
+      for (Action a : lastActions) {
         // Turn starts
         Unit currentUnit = a.getUnit();
-        // System.out.println("Next turn for " + currentUnit.getName() + " at " +
         if (currentUnit.getNextActionValue() < getTotalActionValue()) {
           Action newAction = currentUnit.generateAction(ActionType.ULTIMATE);
           ActionHandler.execute(newAction);
-          toAdd.add(newAction);
           actionWasTaken = true;
         } else {
           actionWasTaken = false;
         }
       }
-      if (actionWasTaken) {
-        pendingActions = new ArrayList<>(toAdd);
-      } else {
-        pendingActions = new ArrayList<>();
-      }
-
-      toAdd = new ArrayList<>();
-      // System.out.println("Current list of pending actions: " +
-      // getPendingActions());
     } while (actionWasTaken);
 
-    // List all actions
+    // List all turns
     for (Action a : getActionLog()) {
       System.out.println("- " + a);
     }
@@ -122,29 +110,27 @@ public class Sim {
     this.totalActionValue = totalActionValue;
   }
 
-  public List<Action> getPendingActions() {
-    return this.pendingActions;
-  }
-
-  public void addToPendingActions(Action a) {
-    getPendingActions().add(a);
-  }
-
   public ArrayList<Action> getActionLog() {
     return this.actionLog;
   }
 
-  // public double getFirstActionValue
-
-  public List<Action> getPendingActions(double actionValue) {
-    return new ArrayList<>(getActionLog().stream()
-        .filter(action -> action.getActionValue() > actionValue)
-        .sorted(new ActionComparator())
-        .toList());
-  }
-
   public void addToActionLog(Action a) {
     getActionLog().add(a);
+  }
+
+  public List<Action> getLastActions() {
+    return this.lastActions;
+  }
+
+  public void refreshLastActions() {
+    this.lastActions = getRefreshedLastActions();
+  }
+
+  public List<Action> getRefreshedLastActions() {
+    return new ArrayList<>(getUnits()
+        .stream()
+        .map(unit -> unit.getLastAction())
+        .toList());
   }
 
   @Override

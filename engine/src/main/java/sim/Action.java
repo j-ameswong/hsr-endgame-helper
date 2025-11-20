@@ -61,6 +61,6 @@ public class Action {
 
   @Override
   public String toString() {
-    return getUnit().getName() + " " + getActionType() + " at " + String.format("%.2f", getActionValue());
+    return "<" + getUnit().getName() + " " + getActionType() + " at " + String.format("%.2f", getActionValue()) + ">";
   }
 }
