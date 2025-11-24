@@ -2,117 +2,74 @@ package com.hoyoverse.hsr_combat_simulator.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+
+import org.springframework.stereotype.Service;
 
 import com.hoyoverse.hsr_combat_simulator.model.Action;
 import com.hoyoverse.hsr_combat_simulator.model.Unit;
 import com.hoyoverse.hsr_combat_simulator.model.enums.ActionType;
 import com.hoyoverse.hsr_combat_simulator.model.enums.GameMode;
 
+@Service
 public class CombatEngine {
-    private ArrayList<Unit> units;
-    private ArrayList<Action> actionLog;
-    private List<Action> lastActions;
-    private ActionService actionHandler;
-    private GameMode gameMode;
-    private int numCycles;
-    private double totalActionValue;
-
-    public CombatEngine(ArrayList<Unit> units, GameMode gameMode, int numCycles) {
-        this.units = units;
-        this.gameMode = gameMode;
-        this.numCycles = numCycles;
-        this.actionLog = new ArrayList<>();
-
-        this.totalActionValue = gameMode.firstCycleActionValue +
-                (numCycles * gameMode.subsequentCyclesActionValue);
-    }
+    private PriorityQueue<Unit> actionQueue;
+    private ActionService actionService;
+    private double globalAV = 0;
 
     // default simulator
-    public CombatEngine() {
-        ArrayList<Unit> units = new ArrayList<>();
-        units.addAll(Arrays.asList(
-                new Unit("Blade", 134, 0),
-                new Unit("Sparkle", 160, 0)));
-
-        this(units, GameMode.MEMORY_OF_CHAOS, 1);
+    public void initializeBattle(List<Unit> units) {
+        this.actionService = new ActionService();
+        this.actionQueue = new PriorityQueue<>(
+                Comparator.comparingDouble(Unit::getCurrentAV));
+        this.actionQueue.addAll(units);
     }
 
-    public void run() {
+    // actionQueue = Arrays.asList(
+    // new Unit("Blade", 134, 0),
+    // new Unit("Sparkle", 160, 0));
+
+    public void tick() {
         // Initialize
-        actionHandler = new ActionService();
         System.out.println(this);
-        // Load each unit's first action
 
-        boolean actionWasTaken = false;
-        // Battle begins, get turns sorted by AV
-        do {
-            System.out.println("--------------------------\n" + getLastActions());
-            for (Action a : lastActions) {
-                // Turn starts
-                Unit currentUnit = a.getUnit();
-                if (true) {
-                    actionWasTaken = true;
-                }
-            }
-        } while (actionWasTaken);
+        if (actionQueue.isEmpty())
+            return;
 
-        // List all turns
-        for (Action a : getActionLog()) {
-            System.out.println("- " + a);
-        }
+        // Get next acting unit
+        Unit activeUnit = actionQueue.poll();
+
+        // Set simulator AV to this unit's AV
+        setGlobalAV(activeUnit.getCurrentAV());
+
+        // Execute action
+        actionService.execute(activeUnit, this);
+
+        // Queue next action
+        activeUnit.setCurrentAV(getGlobalAV() +
+                10000.0 / activeUnit.getSpeed());
+        actionQueue.add(activeUnit);
     }
 
-    public ArrayList<Unit> getUnits() {
-        return units;
+    public PriorityQueue<Unit> getActionQueue() {
+        return actionQueue;
     }
 
-    public void setUnits(ArrayList<Unit> units) {
-        this.units = units;
+    public double getGlobalAV() {
+        return globalAV;
     }
 
-    public GameMode getGameMode() {
-        return gameMode;
-    }
-
-    public void setGameMode(GameMode gameMode) {
-        this.gameMode = gameMode;
-    }
-
-    public int getNumCycles() {
-        return numCycles;
-    }
-
-    public void setNumCycles(int numCycles) {
-        this.numCycles = numCycles;
-    }
-
-    public double getTotalActionValue() {
-        return totalActionValue;
-    }
-
-    public void setTotalActionValue(double totalActionValue) {
-        this.totalActionValue = totalActionValue;
-    }
-
-    public ArrayList<Action> getActionLog() {
-        return this.actionLog;
-    }
-
-    public void addToActionLog(Action a) {
-        getActionLog().add(a);
-    }
-
-    public List<Action> getLastActions() {
-        return this.lastActions;
+    public void setGlobalAV(double globalAV) {
+        this.globalAV = globalAV;
     }
 
     @Override
     public String toString() {
         return "Simulator Setup: \n" +
-                "> Units: " + getUnits() + "\n" +
-                "> Gamemode: " + getGameMode().name + "\n" +
-                "> Cycle count: " + getNumCycles() + " (" + getTotalActionValue() + "AV)" +
+                "> Units: " + getActionQueue() + "\n" +
+                "> Global Sim AV: " + getGlobalAV() +
                 ".\n.\n.\n.";
     }
 }
