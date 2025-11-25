@@ -11,18 +11,25 @@ public class ActionService {
     public ActionService() {
     }
 
-    public void execute(Unit u, CombatEngine e) {
-        // If action advance is involved
-        // Unit unit = a.getUnit();
-        // if (a.getActionType().equals(ActionType.ULTIMATE)) {
-        // double actionAdvance = 0.0;
-        // }
-        // if (a.getActionType().equals(ActionType.ULTIMATE)) {
-        // for (Action act : actions.stream()
-        // .filter(thisAction -> thisAction.getActionValue() > a.getActionValue())
-        // .toList()) {
-        // System.out.println("Would execute DDD on " + act);
-        // }
-        // }
+    public void execute(Action action, CombatEngine engine) {
+        Unit unit = action.getUnit();
+
+        System.out.println("Processing: " + action);
+
+        // Notify startOfTurn listeners
+
+        switch (action.getType()) {
+            case SKILL:
+                //
+                break;
+            case ULTIMATE:
+                //
+                break;
+            case BASIC:
+                //
+                break;
+        }
+
+        // unit.getObservers... i.e. process all events
     }
 }

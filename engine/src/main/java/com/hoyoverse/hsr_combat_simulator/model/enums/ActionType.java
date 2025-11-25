@@ -3,8 +3,7 @@ package com.hoyoverse.hsr_combat_simulator.model.enums;
 public enum ActionType {
     BASIC("Basic attack"),
     SKILL("Use skill"),
-    ULTIMATE("Cast ultimate"),
-    ENTER_BATTLE("Character enters battle");
+    ULTIMATE("Cast ultimate");
 
     private String description;
 

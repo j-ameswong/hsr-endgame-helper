@@ -45,7 +45,7 @@ public class CombatEngine {
         setGlobalAV(activeUnit.getCurrentAV());
 
         // Execute action
-        actionService.execute(activeUnit, this);
+        // actionService.execute();
 
         // Queue next action
         activeUnit.setCurrentAV(getGlobalAV() +
