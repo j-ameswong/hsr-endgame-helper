@@ -1,21 +1,13 @@
-import { useState } from "react";
 import "./App.css";
-import AddCharacter from "./Components/addCharacter";
-import Navbar from "./Components/navbar";
-import Graph from "./Components/graph";
-import SpeedSettings from "./Components/calcSettings";
+import { Routes, Route } from "react-router";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
-      <div className="container">
-        <Navbar />
-        {/* <AddCharacter stringParam="Sparkle" />*/}
-      </div>
-      <Graph></Graph>
-      <SpeedSettings />
+      {/* <Navbar /> */}
+      <Routes>
+        <Route path="/" element="./pages/calc.tsx" />
+      </Routes>
     </>
   );
 }
