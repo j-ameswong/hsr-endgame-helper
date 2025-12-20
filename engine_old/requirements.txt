@@ -1,8 +1,0 @@
-# Requirements for the CLI 
-1. Initialize character with speed
-2. Calculate action value 
-
-# Pt.2
-1. Sim.java
-2. Initialize multiple Units 
-3. Generate full action list within certain number of cycles

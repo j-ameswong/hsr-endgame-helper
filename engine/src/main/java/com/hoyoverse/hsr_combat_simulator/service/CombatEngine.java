@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hoyoverse.hsr_combat_simulator.model.Action;
@@ -16,8 +18,10 @@ import com.hoyoverse.hsr_combat_simulator.model.enums.GameMode;
 @Service
 public class CombatEngine {
     private PriorityQueue<Unit> actionQueue;
+    @Autowired
     private ActionService actionService;
     private double globalAV = 0;
+    private Scanner scanner = new Scanner(System.in);
 
     // default simulator
     public void initializeBattle(List<Unit> units) {
@@ -27,12 +31,8 @@ public class CombatEngine {
         this.actionQueue.addAll(units);
     }
 
-    // actionQueue = Arrays.asList(
-    // new Unit("Blade", 134, 0),
-    // new Unit("Sparkle", 160, 0));
-
     public void tick() {
-        // Initialize
+        // Init
         System.out.println(this);
 
         if (actionQueue.isEmpty())
@@ -44,8 +44,13 @@ public class CombatEngine {
         // Set simulator AV to this unit's AV
         setGlobalAV(activeUnit.getCurrentAV());
 
+        System.out.println("Basic, Skill, or Ult: (B/S/C) ");
+        // placeholders
+        Action action = new Action(activeUnit, getGlobalAV(),
+                ActionType.ULTIMATE);
+
         // Execute action
-        // actionService.execute();
+        actionService.execute(action, this);
 
         // Queue next action
         activeUnit.setCurrentAV(getGlobalAV() +
