@@ -1,0 +1,193 @@
+import React, { useState, useEffect } from 'react';
+import './calc.css';
+
+interface ActionOccurrence {
+  actionNumber: number;
+  actionValue: number;
+}
+
+interface ActionResponse {
+  unitName: string;
+  actions: ActionOccurrence[];
+}
+
+interface Breakpoint {
+  numActions: number;
+  speed: number;
+}
+
+interface BreakpointResponse {
+  breakpoints: Breakpoint[];
+}
+
+const CYCLE_AV_MAP: Record<string, number> = {
+  "0": 150,
+  "1": 250,
+  "2": 350,
+  "3": 450
+};
+
+const CombatSim: React.FC = () => {
+  // State
+  const [speed, setSpeed] = useState<number>(133.4);
+  const [cycleOption, setCycleOption] = useState<string>("0");
+
+  const [actions, setActions] = useState<ActionOccurrence[]>([]);
+  const [breakpoints, setBreakpoints] = useState<Breakpoint[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const MAX_AV = CYCLE_AV_MAP[cycleOption];
+
+  // Fetch Data
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // 1. Get Actions
+      const actionRes = await fetch('/api/sim/calculate-actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          unitName: "TestUnit",
+          speed: speed,
+          maxAv: MAX_AV
+        })
+      });
+
+      if (!actionRes.ok) throw new Error("Failed to fetch actions");
+      const actionData: ActionResponse = await actionRes.json();
+      setActions(actionData.actions);
+
+      // 2. Get Breakpoints
+      const breakRes = await fetch('/api/sim/calculate-breakpoints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          speed: speed,
+          maxAv: MAX_AV,
+          numActions: 6
+        })
+      });
+
+      if (!breakRes.ok) throw new Error("Failed to fetch breakpoints");
+      const breakData: BreakpointResponse = await breakRes.json();
+      setBreakpoints(breakData.breakpoints);
+
+    } catch (err) {
+      console.error("Failed to fetch simulation data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [speed, cycleOption]);
+
+  // Handlers
+  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSpeed(Number(e.target.value));
+  };
+
+  const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCycleOption(e.target.value);
+  };
+
+  return (
+    <div className="sim-container">
+      <h1 className="header">HSR Speed Simulator</h1>
+
+      {/* --- Controls --- */}
+      <div className="control-panel">
+        <div className="input-group">
+          <label className="input-label">Character Speed</label>
+          <input
+            type="number"
+            value={speed}
+            step={0.1}
+            onChange={handleSpeedChange}
+            className="sim-input"
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">Cycle Limit</label>
+          <select
+            value={cycleOption}
+            onChange={handleCycleChange}
+            className="sim-select"
+          >
+            <option value="0">Cycle 0 (150 AV)</option>
+            <option value="1">Cycle 1 (250 AV)</option>
+            <option value="2">Cycle 2 (350 AV)</option>
+            <option value="3">Cycle 3 (450 AV)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* --- Action Bar Visualization --- */}
+      <div className="section">
+        <h3>Action Timeline (0 - {MAX_AV} AV)</h3>
+        {loading ? <p>Loading...</p> : (
+          <div className="bar-container">
+            <div className="bar-background">
+              {actions.map((act) => {
+                const leftPos = (act.actionValue / MAX_AV) * 100;
+                if (leftPos > 100) return null;
+
+                return (
+                  <div
+                    key={act.actionNumber}
+                    className="marker"
+                    // Dynamic style is kept inline for the position
+                    style={{ left: `${leftPos}%` }}
+                    title={`Action #${act.actionNumber} at ${act.actionValue} AV`}
+                  >
+                    {/* <div className="marker-label">{act.actionNumber}</div> */}
+                    <div className="marker-tooltip">{act.actionValue.toFixed(1)} AV</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="axis-labels">
+              <span>0 AV</span>
+              <span>{MAX_AV} AV</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* --- Breakpoints Data Table --- */}
+      <div className="section">
+        <h3>Speed Breakpoints for Selected Cycle</h3>
+        <table className="sim-table">
+          <thead>
+            <tr>
+              <th className="sim-th">Actions Possible</th>
+              <th className="sim-th">Speed Threshold</th>
+              <th className="sim-th">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {breakpoints.map((bp) => {
+              const achieved = speed >= bp.speed;
+              return (
+                <tr
+                  key={bp.numActions}
+                  className={`sim-tr ${achieved ? 'active' : ''}`}
+                >
+                  <td className="sim-td">{bp.numActions} Actions</td>
+                  <td className="sim-td">{bp.speed.toFixed(1)} SPD</td>
+                  <td className="sim-td">
+                    {achieved ? "Achieved" : `Need +${Number(bp.speed - speed).toFixed()}`}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default CombatSim;

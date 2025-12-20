@@ -26,7 +26,7 @@ public class SimulationService {
         int count = 1;
 
         // loop until next action exceeds the max sim av
-        while (currentTotalAv < maxAv) {
+        while (currentTotalAv <= maxAv) {
             actions.add(new ActionOccurrence(count++, currentTotalAv));
             currentTotalAv += baseAv;
         }

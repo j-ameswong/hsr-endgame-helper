@@ -1,13 +1,18 @@
-import "./App.css";
-import { Routes, Route } from "react-router";
+// import "./App.css";
+import { Routes, Route, Router } from "react-router";
+import CombatSim from "./pages/calc";
 
 function App() {
   return (
     <>
       {/* <Navbar /> */}
-      <Routes>
-        <Route path="/" element="./pages/calc.tsx" />
-      </Routes>
+      {/* <Router> */}
+      {/*   <Routes> */}
+      {/*     <Route path="/" element=<CombatSim /> /> */}
+      {/*   </Routes> */}
+      {/* </Router> */}
+
+      <CombatSim />
     </>
   );
 }
