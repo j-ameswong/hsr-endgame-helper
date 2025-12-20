@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hoyoshills.avcalc.dto.BreakpointRequest;
+import com.hoyoshills.avcalc.dto.BreakpointResponse;
 import com.hoyoshills.avcalc.dto.CalcRequest;
 import com.hoyoshills.avcalc.dto.CalcResponse;
 import com.hoyoshills.avcalc.services.SimulationService;
@@ -23,5 +25,10 @@ public class CalcController {
     @PostMapping("/calculate-actions")
     public ResponseEntity<CalcResponse> getActions(@RequestBody CalcRequest request) {
         return ResponseEntity.ok(simulationService.calculateActions(request));
+    }
+
+    @PostMapping("/calculate-breakpoints")
+    public ResponseEntity<BreakpointResponse> getBreakpoints(@RequestBody BreakpointRequest request) {
+        return ResponseEntity.ok(simulationService.calculateBreakpoints(request));
     }
 }
