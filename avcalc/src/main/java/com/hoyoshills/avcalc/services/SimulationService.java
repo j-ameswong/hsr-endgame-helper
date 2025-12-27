@@ -1,11 +1,13 @@
 package com.hoyoshills.avcalc.services;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import org.springframework.stereotype.Service;
 
-import com.hoyoshills.avcalc.dto.ActionOccurrence;
+import com.hoyoshills.avcalc.dto.Turn;
 import com.hoyoshills.avcalc.dto.Breakpoint;
 import com.hoyoshills.avcalc.dto.BreakpointRequest;
 import com.hoyoshills.avcalc.dto.BreakpointResponse;
@@ -15,23 +17,37 @@ import com.hoyoshills.avcalc.dto.CalcResponse;
 @Service
 public class SimulationService {
 
+    // private record ActionAdvance(double actionAdvanceAmount) {}
     public CalcResponse calculateActions(CalcRequest request) {
         double speed = request.speed();
         double maxAv = request.maxAv();
 
-        double baseAv = 10000.0 / speed;
+        double nextAv = 10000.0 / speed; // initially with base av
 
-        List<ActionOccurrence> actions = new ArrayList<>();
-        double currentTotalAv = baseAv;
-        int count = 1;
+        PriorityQueue<Turn> turns = new PriorityQueue<>(
+                Comparator.comparingDouble(Turn::actionValue)
+            );
+        double globalAv = nextAv;
+
+        // Temporary
+        class Thing {
+            public int count = 0;
+            public List<Double> actionAdvance = List.of(0.0, 0.25, 0.0);
+        }
+        Thing thing = new Thing();
 
         // loop until next action exceeds the max sim av
-        while (currentTotalAv <= maxAv) {
-            actions.add(new ActionOccurrence(count++, currentTotalAv));
-            currentTotalAv += baseAv;
+        while (true) {
+            globalAv += nextAv;
+            if (globalAv > maxAv) break;
+
+            turns.add(new Turn(nextAv));
+
+            // probably apply advance logic here
+            
         }
 
-        return new CalcResponse(request.unitName(), actions);
+        return new CalcResponse(request.unitName(), turns.stream().toList());
 
     }
 

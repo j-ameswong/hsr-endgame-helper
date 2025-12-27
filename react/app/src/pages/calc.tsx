@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './calc.css';
 
-interface ActionOccurrence {
+interface Action {
   actionNumber: number;
   actionValue: number;
 }
 
 interface ActionResponse {
   unitName: string;
-  actions: ActionOccurrence[];
+  actions: Action[];
 }
 
 interface Breakpoint {
@@ -32,7 +32,7 @@ const CombatSim: React.FC = () => {
   const [speed, setSpeed] = useState<number>(133.4);
   const [cycleOption, setCycleOption] = useState<string>("0");
 
-  const [actions, setActions] = useState<ActionOccurrence[]>([]);
+  const [actions, setActions] = useState<Action[]>([]);
   const [breakpoints, setBreakpoints] = useState<Breakpoint[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
