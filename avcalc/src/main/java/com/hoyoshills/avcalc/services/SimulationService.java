@@ -22,7 +22,8 @@ public class SimulationService {
         double speed = request.speed();
         double maxAv = request.maxAv();
 
-        double nextAv = 10000.0 / speed; // initially with base av
+        double baseAv = 10000.0 / speed; // initially with base av
+        double nextAv = 10000.0 / speed;
 
         PriorityQueue<Turn> turns = new PriorityQueue<>(
                 Comparator.comparingDouble(Turn::actionValue)
@@ -32,19 +33,21 @@ public class SimulationService {
         // Temporary
         class Thing {
             public int count = 0;
-            public List<Double> actionAdvance = List.of(0.0, 0.25, 0.0);
+            public List<Double> actionAdvance = List.of(0.25, 0.25, 0.0);
         }
         Thing thing = new Thing();
 
         // loop until next action exceeds the max sim av
         while (true) {
-            globalAv += nextAv;
-            if (globalAv > maxAv) break;
-
-            turns.add(new Turn(nextAv));
+            // turns.add(new Turn(globalAv));
+            turns.add(new Turn(globalAv));
 
             // probably apply advance logic here
-            
+            // next action = baseAv - (baseAv * actionAdvance (%))
+            nextAv = baseAv - (baseAv * thing.actionAdvance.get(thing.count++));
+
+            globalAv += nextAv;
+            if (globalAv > maxAv) break;
         }
 
         return new CalcResponse(request.unitName(), turns.stream().toList());
