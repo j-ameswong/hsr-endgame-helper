@@ -22,29 +22,21 @@ public class SimulationService {
         double speed = request.speed();
         double maxAv = request.maxAv();
 
-        double baseAv = 10000.0 / speed; // initially with base av
-        double nextAv = 10000.0 / speed;
+        double baseAv = 10000.0 / speed;
+        double nextAv = baseAv;
 
         PriorityQueue<Turn> turns = new PriorityQueue<>(
                 Comparator.comparingDouble(Turn::actionValue)
             );
         double globalAv = nextAv;
 
-        // Temporary
-        class Thing {
-            public int count = 0;
-            public List<Double> actionAdvance = List.of(0.25, 0.25, 0.0);
-        }
-        Thing thing = new Thing();
-
         // loop until next action exceeds the max sim av
         while (true) {
-            // turns.add(new Turn(globalAv));
             turns.add(new Turn(globalAv));
 
             // probably apply advance logic here
             // next action = baseAv - (baseAv * actionAdvance (%))
-            nextAv = baseAv - (baseAv * thing.actionAdvance.get(thing.count++));
+            nextAv = baseAv - (baseAv * 0.24);
 
             globalAv += nextAv;
             if (globalAv > maxAv) break;
@@ -55,17 +47,28 @@ public class SimulationService {
     }
 
     public BreakpointResponse calculateBreakpoints(BreakpointRequest request) {
-        double speed = request.speed();
+        final double DDD_AA_AMOUNT = 0.24;
+        final double EAGLE_AA_AMOUNT = 0.25;
+
         double maxAv = request.maxAv();
         int numActions = request.numActions();
+        double speed = request.speed();
+
+        // Number of actions with current speed
+        int currentActions = (int) (speed * maxAv
+                    + ( DDD_AA_AMOUNT * 10000 ) + ( EAGLE_AA_AMOUNT * 10000 )
+                    / 10000);
+        // Check breakpoints starting from prev action
+        int startActions = Math.max(1, currentActions - 1);
 
         List<Breakpoint> breakpoints = new ArrayList<>();
 
-        int currentActions = (int) Math.floor((speed * maxAv) / 10000.0);
-        double reqSpeed = (double) (currentActions * 10000.0) / maxAv;
-        while (currentActions <= numActions) {
-            breakpoints.add(new Breakpoint(currentActions++, reqSpeed));
-            reqSpeed = (double) (currentActions * 10000.0) / maxAv;
+        for (int i = startActions; i <= numActions; i++) {
+            double distRequired = ( i * 10000 )
+                    - ( DDD_AA_AMOUNT * 10000 ) - ( EAGLE_AA_AMOUNT * 10000 );
+            double reqSpeed = Math.max(0, distRequired / maxAv);
+
+            breakpoints.add(new Breakpoint(i, reqSpeed));
         }
 
         return new BreakpointResponse(breakpoints);
