@@ -50,22 +50,27 @@ public class SimulationService {
         final double DDD_AA_AMOUNT = 0.24;
         final double EAGLE_AA_AMOUNT = 0.25;
 
+        double speed = request.speed();
         double maxAv = request.maxAv();
         int numActions = request.numActions();
-        double speed = request.speed();
+        int numDDD = request.numDDD();
+        int numEagle = request.numEagle();
 
         // Number of actions with current speed
-        int currentActions = (int) (speed * maxAv
-                    + ( DDD_AA_AMOUNT * 10000 ) + ( EAGLE_AA_AMOUNT * 10000 )
-                    / 10000);
+        int currentActions = (int) Math.floor((speed * maxAv
+                + (DDD_AA_AMOUNT * numDDD * 10000)
+                + (EAGLE_AA_AMOUNT * numEagle * 10000))
+                / 10000);
         // Check breakpoints starting from prev action
         int startActions = Math.max(1, currentActions - 1);
 
         List<Breakpoint> breakpoints = new ArrayList<>();
 
-        for (int i = startActions; i <= numActions; i++) {
-            double distRequired = ( i * 10000 )
-                    - ( DDD_AA_AMOUNT * 10000 ) - ( EAGLE_AA_AMOUNT * 10000 );
+        // Assuming no wasted action advances
+        // Calculate one below/above numAction range to get bounds
+        for (int i = startActions; i <= numActions + 1; i++) {
+            double distRequired = (i * 10000)
+                    - (DDD_AA_AMOUNT * 10000) - (EAGLE_AA_AMOUNT * 10000);
             double reqSpeed = Math.max(0, distRequired / maxAv);
 
             breakpoints.add(new Breakpoint(i, reqSpeed));
