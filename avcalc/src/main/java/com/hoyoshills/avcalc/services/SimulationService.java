@@ -1,18 +1,19 @@
 package com.hoyoshills.avcalc.services;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
-
-import org.springframework.stereotype.Service;
-
-import com.hoyoshills.avcalc.dto.Turn;
 import com.hoyoshills.avcalc.dto.Breakpoint;
 import com.hoyoshills.avcalc.dto.BreakpointRequest;
 import com.hoyoshills.avcalc.dto.BreakpointResponse;
 import com.hoyoshills.avcalc.dto.CalcRequest;
 import com.hoyoshills.avcalc.dto.CalcResponse;
+import com.hoyoshills.avcalc.dto.Turn;
+import com.hoyoshills.avcalc.dto.enums.ActionType;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 @Service
 public class SimulationService {
@@ -23,27 +24,44 @@ public class SimulationService {
         double maxAv = request.maxAv();
 
         double baseAv = 10000.0 / speed;
-        double nextAv = baseAv;
 
-        PriorityQueue<Turn> turns = new PriorityQueue<>(
-                Comparator.comparingDouble(Turn::actionValue)
-            );
-        double globalAv = nextAv;
+        // Turn queue
+        PriorityQueue<Turn> turns =
+                new PriorityQueue<>(Comparator.comparingDouble(Turn::actionValue));
+        List<Turn> responseTurns = new ArrayList<>();
+
+        List<Turn> actionAdvancePoints =
+                List.of(
+                        // new Turn(20.0, ActionType.ADVANCE),
+                        // new Turn(40.0, ActionType.ADVANCE),
+                        // new Turn(100.0, ActionType.ADVANCE),
+                        new Turn(145.0, ActionType.ADVANCE), new Turn(145.0, ActionType.ADVANCE));
+
+        turns.addAll(actionAdvancePoints);
 
         // loop until next action exceeds the max sim av
-        while (true) {
-            turns.add(new Turn(globalAv));
-
-            // probably apply advance logic here
+        double nextAv = baseAv;
+        while (!turns.isEmpty()) {
             // next action = baseAv - (baseAv * actionAdvance (%))
-            nextAv = baseAv - (baseAv * 0.24);
+            Turn currentTurn = turns.poll();
 
-            globalAv += nextAv;
-            if (globalAv > maxAv) break;
+            // End when AV exceeds cycle
+            if (currentTurn.actionValue() > maxAv) break;
+
+            if (nextAv < currentTurn.actionValue()) {
+                responseTurns.add(new Turn(nextAv, ActionType.NORMAL));
+                nextAv += baseAv;
+            } else if (currentTurn.actionType() == ActionType.NORMAL) {
+                responseTurns.add(currentTurn);
+                nextAv += baseAv;
+            }
+
+            if (currentTurn.actionType() == ActionType.ADVANCE) {
+                nextAv = Math.max(currentTurn.actionValue(), nextAv - baseAv * 0.24);
+            }
         }
 
-        return new CalcResponse(request.unitName(), turns.stream().toList());
-
+        return new CalcResponse(request.unitName(), responseTurns.stream().toList());
     }
 
     public BreakpointResponse calculateBreakpoints(BreakpointRequest request) {
@@ -57,10 +75,13 @@ public class SimulationService {
         int numEagle = request.numEagle();
 
         // Number of actions with current speed
-        int currentActions = (int) Math.floor((speed * maxAv
-                + (DDD_AA_AMOUNT * numDDD * 10000)
-                + (EAGLE_AA_AMOUNT * numEagle * 10000))
-                / 10000);
+        int currentActions =
+                (int)
+                        Math.floor(
+                                (speed * maxAv
+                                                + (DDD_AA_AMOUNT * numDDD * 10000)
+                                                + (EAGLE_AA_AMOUNT * numEagle * 10000))
+                                        / 10000);
         // Check breakpoints starting from prev action
         int startActions = Math.max(1, currentActions - 1);
 
@@ -69,8 +90,7 @@ public class SimulationService {
         // Assuming no wasted action advances
         // Calculate one below/above numAction range to get bounds
         for (int i = startActions; i <= numActions + 1; i++) {
-            double distRequired = (i * 10000)
-                    - (DDD_AA_AMOUNT * 10000) - (EAGLE_AA_AMOUNT * 10000);
+            double distRequired = (i * 10000) - (DDD_AA_AMOUNT * 10000) - (EAGLE_AA_AMOUNT * 10000);
             double reqSpeed = Math.max(0, distRequired / maxAv);
 
             breakpoints.add(new Breakpoint(i, reqSpeed));

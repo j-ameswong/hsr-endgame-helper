@@ -1,4 +1,6 @@
 package com.hoyoshills.avcalc.dto;
 
-public record Turn(double actionValue) {
+import com.hoyoshills.avcalc.dto.enums.ActionType;
+
+public record Turn(double actionValue, ActionType actionType) {
 }
