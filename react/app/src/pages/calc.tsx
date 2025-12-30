@@ -6,9 +6,14 @@ interface Action {
   actionValue: number;
 }
 
+interface Turn {
+  actionValue: number;
+  actionType: string;
+}
+
 interface ActionResponse {
   unitName: string;
-  actions: Action[];
+  turns: Turn[];
 }
 
 interface Breakpoint {
@@ -29,11 +34,15 @@ const CYCLE_AV_MAP: Record<string, number> = {
 
 const CombatSim: React.FC = () => {
   // State
+  const [turns, setTurns] = useState<Turn[]>([]);
   const [speed, setSpeed] = useState<number>(133.4);
   const [cycleOption, setCycleOption] = useState<string>("0");
+  const [actionAdvancePoints, setActionAdvancePoints] = useState<Turn[]>([]);
 
-  const [actions, setActions] = useState<Action[]>([]);
   const [breakpoints, setBreakpoints] = useState<Breakpoint[]>([]);
+  const [numDDD, setNumDDD] = useState<number>(0);
+  const [numEagle, setNumEagle] = useState<number>(0);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const MAX_AV = CYCLE_AV_MAP[cycleOption];
@@ -42,20 +51,21 @@ const CombatSim: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // 1. Get Actions
-      const actionRes = await fetch('/api/sim/calculate-actions', {
+      // 1. Get Turns
+      const turnRes = await fetch('/api/sim/calculate-actions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           unitName: "TestUnit",
           speed: speed,
-          maxAv: MAX_AV
+          maxAv: MAX_AV,
+          actionAdvancePoints: actionAdvancePoints
         })
       });
 
-      if (!actionRes.ok) throw new Error("Failed to fetch actions");
-      const actionData: ActionResponse = await actionRes.json();
-      setActions(actionData.actions);
+      if (!turnRes.ok) throw new Error("Failed to fetch actions");
+      const turnData: ActionResponse = await turnRes.json();
+      setTurns(turnData.turns);
 
       // 2. Get Breakpoints
       const breakRes = await fetch('/api/sim/calculate-breakpoints', {
@@ -64,7 +74,9 @@ const CombatSim: React.FC = () => {
         body: JSON.stringify({
           speed: speed,
           maxAv: MAX_AV,
-          numActions: 6
+          numActions: 6,
+          numDDD: numDDD,
+          numEagle: numEagle
         })
       });
 
@@ -130,20 +142,20 @@ const CombatSim: React.FC = () => {
         {loading ? <p>Loading...</p> : (
           <div className="bar-container">
             <div className="bar-background">
-              {actions.map((act) => {
-                const leftPos = (act.actionValue / MAX_AV) * 100;
+              {turns.map((turn) => {
+                const leftPos = (turn.actionValue / MAX_AV) * 100;
                 if (leftPos > 100) return null;
 
                 return (
                   <div
-                    key={act.actionNumber}
+                    key={turns.indexOf(turn)}
                     className="marker"
                     // Dynamic style is kept inline for the position
                     style={{ left: `${leftPos}%` }}
-                    title={`Action #${act.actionNumber} at ${act.actionValue} AV`}
+                    title={`Action #${turns.indexOf(turn) + 1} at ${turn.actionValue} AV`}
                   >
                     {/* <div className="marker-label">{act.actionNumber}</div> */}
-                    <div className="marker-tooltip">{act.actionValue.toFixed(1)} AV</div>
+                    <div className="marker-tooltip">{turn.actionValue.toFixed(1)} AV</div>
                   </div>
                 );
               })}

@@ -28,16 +28,7 @@ public class SimulationService {
         // Turn queue
         PriorityQueue<Turn> turns =
                 new PriorityQueue<>(Comparator.comparingDouble(Turn::actionValue));
-        List<Turn> responseTurns = new ArrayList<>();
-
-        List<Turn> actionAdvancePoints =
-                List.of(
-                        // new Turn(20.0, ActionType.ADVANCE),
-                        // new Turn(40.0, ActionType.ADVANCE),
-                        // new Turn(100.0, ActionType.ADVANCE),
-                        new Turn(145.0, ActionType.ADVANCE), new Turn(145.0, ActionType.ADVANCE));
-
-        turns.addAll(actionAdvancePoints);
+        turns.addAll(request.actionAdvancePoints());
 
         // Add first turn to turns
         // Should check for vonwacq here
@@ -45,6 +36,8 @@ public class SimulationService {
         turns.add(trackedTurn);
 
         // loop until next action exceeds the max sim av
+        List<Turn> responseTurns = new ArrayList<>();
+
         while (!turns.isEmpty()) {
             Turn currentTurn = turns.poll();
             if (currentTurn.actionValue() > maxAv) break;
@@ -99,7 +92,10 @@ public class SimulationService {
         // Assuming no wasted action advances
         // Calculate one below/above numAction range to get bounds
         for (int i = startActions; i <= numActions + 1; i++) {
-            double distRequired = (i * 10000) - (DDD_AA_AMOUNT * 10000) - (EAGLE_AA_AMOUNT * 10000);
+            double distRequired =
+                    (i * 10000)
+                            - (DDD_AA_AMOUNT * numDDD * 10000)
+                            - (EAGLE_AA_AMOUNT * numEagle * 10000);
             double reqSpeed = Math.max(0, distRequired / maxAv);
 
             breakpoints.add(new Breakpoint(i, reqSpeed));

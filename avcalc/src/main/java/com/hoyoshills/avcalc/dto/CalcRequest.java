@@ -1,4 +1,6 @@
 package com.hoyoshills.avcalc.dto;
 
-public record CalcRequest(String unitName, double speed, double maxAv) {
-}
+import java.util.List;
+
+public record CalcRequest(
+        String unitName, double speed, double maxAv, List<Turn> actionAdvancePoints) {}
