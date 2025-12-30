@@ -39,25 +39,34 @@ public class SimulationService {
 
         turns.addAll(actionAdvancePoints);
 
-        // loop until next action exceeds the max sim av
-        double nextAv = baseAv;
-        while (!turns.isEmpty()) {
-            // next action = baseAv - (baseAv * actionAdvance (%))
-            Turn currentTurn = turns.poll();
+        // Add first turn to turns
+        // Should check for vonwacq here
+        Turn trackedTurn = new Turn(baseAv, ActionType.NORMAL);
+        turns.add(trackedTurn);
 
-            // End when AV exceeds cycle
+        // loop until next action exceeds the max sim av
+        while (!turns.isEmpty()) {
+            Turn currentTurn = turns.poll();
             if (currentTurn.actionValue() > maxAv) break;
 
-            if (nextAv < currentTurn.actionValue()) {
-                responseTurns.add(new Turn(nextAv, ActionType.NORMAL));
-                nextAv += baseAv;
-            } else if (currentTurn.actionType() == ActionType.NORMAL) {
-                responseTurns.add(currentTurn);
-                nextAv += baseAv;
-            }
+            if (currentTurn == trackedTurn) {
+                responseTurns.add(trackedTurn);
 
-            if (currentTurn.actionType() == ActionType.ADVANCE) {
-                nextAv = Math.max(currentTurn.actionValue(), nextAv - baseAv * 0.24);
+                // Generate next turn and track it
+                trackedTurn = new Turn(trackedTurn.actionValue() + baseAv, ActionType.NORMAL);
+                turns.add(trackedTurn);
+            } else if (currentTurn.actionType() == ActionType.ADVANCE) {
+                // Remove and add new advanced turn
+                turns.remove(trackedTurn);
+
+                // next action = baseAv - (baseAv * actionAdvance (%))
+                double nextAv =
+                        Math.max(
+                                currentTurn.actionValue(),
+                                (trackedTurn.actionValue() - baseAv * 0.24));
+
+                trackedTurn = new Turn(nextAv, ActionType.NORMAL);
+                turns.add(trackedTurn);
             }
         }
 
