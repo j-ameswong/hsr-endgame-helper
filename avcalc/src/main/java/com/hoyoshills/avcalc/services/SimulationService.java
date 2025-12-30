@@ -32,7 +32,7 @@ public class SimulationService {
 
         // Add first turn to turns
         // Should check for vonwacq here
-        Turn trackedTurn = new Turn(baseAv, ActionType.NORMAL);
+        Turn trackedTurn = new Turn(baseAv, 0.0, ActionType.NORMAL);
         turns.add(trackedTurn);
 
         // loop until next action exceeds the max sim av
@@ -46,7 +46,7 @@ public class SimulationService {
                 responseTurns.add(trackedTurn);
 
                 // Generate next turn and track it
-                trackedTurn = new Turn(trackedTurn.actionValue() + baseAv, ActionType.NORMAL);
+                trackedTurn = new Turn(trackedTurn.actionValue() + baseAv, 0.0, ActionType.NORMAL);
                 turns.add(trackedTurn);
             } else if (currentTurn.actionType() == ActionType.ADVANCE) {
                 // Remove and add new advanced turn
@@ -56,9 +56,9 @@ public class SimulationService {
                 double nextAv =
                         Math.max(
                                 currentTurn.actionValue(),
-                                (trackedTurn.actionValue() - baseAv * 0.24));
+                                (trackedTurn.actionValue() - baseAv * currentTurn.actionAdvance()));
 
-                trackedTurn = new Turn(nextAv, ActionType.NORMAL);
+                trackedTurn = new Turn(nextAv, 0.0, ActionType.NORMAL);
                 turns.add(trackedTurn);
             }
         }
