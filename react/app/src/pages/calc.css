@@ -139,7 +139,6 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-
 /* --- Toolbox & Filters --- */
 .toolbox-panel {
   display: flex;
@@ -155,7 +154,8 @@
   border-radius: 8px;
 }
 
-.toolbox-item, .filter-group {
+.toolbox-item,
+.filter-group {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -194,7 +194,7 @@
 /* --- Timeline Drop Zone --- */
 .bar-background.drop-target {
   /* Visual cue that this is a drop zone */
-  border: 2px dashed #444; 
+  border: 2px dashed #444;
 }
 
 /* --- Markers --- */
@@ -304,6 +304,29 @@
   border-radius: 8px;
 }
 
+.turn-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.turn-table th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #ddd;
+}
+
+.turn-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.turn-table tr {
+  transition:
+    opacity 0.2s,
+    background 0.2s;
+}
+
 .sim-table {
   width: 100%;
   border-collapse: collapse;
@@ -336,5 +359,6 @@
 
 .inactive .status {
   opacity: 1;
-  color: #ff0000;
+  font-weight: 550;
+  color: #ff2222;
 }

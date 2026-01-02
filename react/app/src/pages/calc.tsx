@@ -318,7 +318,7 @@ const CombatSim: React.FC = () => {
               {/* Turns Table (omitted for brevity, same as before) */}
               <div className="turns-container">
                 <h4 className="turn-header">Resulting Turn Order</h4>
-                <table>
+                <table className="turn-table">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -329,6 +329,7 @@ const CombatSim: React.FC = () => {
                   <tbody>
                     {turns
                       .concat(actionAdvancePoints)
+                      // Sort by action value, and tiebreaker is advance first
                       .sort((a, b) => {
                         if (a.actionValue !== b.actionValue) {
                           return a.actionValue - b.actionValue;
@@ -365,7 +366,9 @@ const CombatSim: React.FC = () => {
                                   : "normal",
                             }}
                           >
-                            {turn.actionType}
+                            {(turn.actionType === "NORMAL")
+                              ? "Action taken"
+                              : "Advance"}
                           </td>
                           <td>{turn.actionValue.toFixed(1)}</td>
                         </tr>
