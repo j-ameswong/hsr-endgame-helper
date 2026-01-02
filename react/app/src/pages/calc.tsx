@@ -390,19 +390,22 @@ const CombatSim: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {breakpoints.map((bp) => {
+                {breakpoints.slice(1).map((bp) => {
                   const achieved = speed >= bp.speed;
                   return (
                     <tr
                       key={bp.numActions}
-                      className={`sim-tr ${achieved ? "active" : ""}`}
+                      className={`sim-tr ${achieved ? "active" : "inactive"}`}
                     >
                       <td className="sim-td">{bp.numActions} Actions</td>
-                      <td className="sim-td">{bp.speed.toFixed(1)} SPD</td>
+                      <td className="sim-td">
+                        {`${breakpoints[breakpoints.indexOf(bp) - 1].speed.toFixed(1)}
+                            - ${bp.speed.toFixed(1)} SPD`}
+                      </td>
                       <td className="sim-td">
                         {achieved
-                          ? `${(bp.speed - speed).toFixed(1)}`
-                          : `Need +${(bp.speed - speed).toFixed(1)}`}
+                          ? <div className="status"> {`${(bp.speed - speed).toFixed(1)}`} </div>
+                          : <div className="status">{`Need + ${(bp.speed - speed).toFixed(1)}`}</div>}
                       </td>
                     </tr>
                   );

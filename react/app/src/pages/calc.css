@@ -333,3 +333,8 @@
   font-weight: bold;
   color: #2ecc71;
 }
+
+.inactive .status {
+  opacity: 1;
+  color: #ff0000;
+}
