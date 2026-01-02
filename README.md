@@ -1,27 +1,29 @@
-# hsr-endgame-helper
+# AvCalc
+*A Simple Honkai Star Rail **a**ction **v**alue **calc**ulator.*
 
-![evernight](https://github.com/user-attachments/assets/e6b25702-76f6-45b9-ac86-76a865c2d4b2)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/cfd494c4-fdcf-4fef-a6eb-7c6633e36a70" />
 
-A Honkai Star Rail "elitist"'s (potentially) handy tool to optimize their rotations and speed tuning.
 
-This is still a very early WIP. The plan is to write a simulation engine in Java, then create a
-REST api for a react frontend.
+> !!! This project has served its purpose as a prototype of a full stack web app, and development is paused for now !!!
 
-The purpose of this project, other than to contribute to the community of my favourite gacha game,
-is to pad my portfolio with full stack web development, while improving my Java skills as well as applying
-good SWE practices.
+## Project Structure:
+- Spring-boot backend
+- Vite + React /w TypeScript
 
-### Java
+### Features:
+- Generate timeline with character actions, as well as setting the total action value for the simulator to visualize
+- Drag action advance tokens to the timeline at the desired point to visualize changes in actions/timing
 
-- [x] Implement basic `Unit`
-- [x] Barebones simulation tracking action value
-- [ ] Everything else in the game :skull:
+### Missing features:
+- Custom total action value selection
+- Custom action advance amount for each token
+- Clear tokens from the timeline
+- Breakpoint table should be up-to-date with action advance tokens/have a togglebale option/indicate required action value to next action
 
-### REST api
+### How to run:
+- Navigate to `/avcalc` and run `./mvnw spring-boot:run`
+- In another terminal, navigate to `/react/app` and run `npm install` followed by `npm run dev`
 
-- [ ] Not started
-
-### React frontend
-
-- [x] Just a bit of experimenting
-- [ ] Everything
+### Credits:
+- [Wallpaper](https://www.goodfon.com/games/wallpaper-honkai-series-firefly-trailblazer-stelle-honkai-star-rail-de.html) by NyankoSensei
+- [nvim-java](https://github.com/nvim-java/nvim-java) is an amazing Java plugin for Neovim!
